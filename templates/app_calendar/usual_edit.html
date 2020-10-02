@@ -36,7 +36,6 @@
  <tr>
   <td><#LANG_DATE#>:</td>
   <td>
-  <span id="due_block"[#if IS_NO_DATE="1"#] style="display:none"[#endif#]><input style="width: auto;" class="form-control" type="date" name="due" id="due" value="[#DUE#]" data-role="none"></span>
   <label><input type="checkbox" name="is_nodate" id="is_nodate" value="1"[#if IS_NODATE="1"#] checked[#endif#] data-role="none">
   <#LANG_NO_DUE_DATE#></label>
 
@@ -72,30 +71,40 @@
   {
   var thisCheck = $(this);
   if (thisCheck.is(':checked')) {
-   $('#due_block').hide();
+   $('#st_time').hide();
   } else {
-   $('#due_block').show();
+   $('#st_time').show();
   }
  }
  );
 
- $('#due').DatePicker({
-        format:'Y-m-d',
-        date: $('#due').val(),
-        current: $('#due').val(),
-        starts: 1,
-        position: 'r',
-        onBeforeShow: function(){
-                $('#due').DatePickerSetDate($('#due').val(), true);
-        },
-        onChange: function(formated, dates){
-                $('#due').val(formated);
-                $('#due').DatePickerHide();
-        }
+</script>
+ </tr>
+ <tr>
+<td>Время начала:</td>
+<td>
+<input type="hidden" class="form-control" id="due" name="due" value="[#DUE#]" />
+<div class="form-group"  style="width: 15%;" >
+  <div class="input-group" id="st_time" [#if IS_NODATE="1"#] style="display:none;"[#endif#] >
+                    <input  type="text" class="form-control" />
+                    <span class="input-group-addon">
+                        <i class="glyphicon glyphicon-calendar"></i>
+                    </span>
+  </div>
+</div>
+</td>
+
+<script language="javascript">
+$(function () {
+$('#st_time').datetimepicker({format: 'DD.MM.YYYY HH:mm',locale: 'ru',defaultDate: '[#DUE#]', sideBySide: true});
+$('#st_time').on("dp.change", function (e) {
+var date1 = $('#st_time input').val();
+var date2 = moment(date1,'DD.MM.YYYY HH:mm').format('YYYY-MM-DD HH:mm:ss');
+document.getElementById('due').value = date2;
+});
 });
 </script>
  </tr>
-
  <tr>
   <td valign="top">&nbsp;</td>
   <td valign="top">

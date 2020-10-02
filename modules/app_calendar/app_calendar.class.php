@@ -290,7 +290,7 @@ function usual(&$out) {
   else
  {
 
-  $events_today_temp=SQLSelect("SELECT calendar_events.*,calendar_categories.ICON FROM calendar_events left join calendar_categories on calendar_events.calendar_category_id=calendar_categories.id WHERE (TO_DAYS(DUE)=TO_DAYS(NOW()) OR IS_NODATE=1) AND IS_REPEATING!=1 AND IS_TASK=0  ORDER BY IS_TASK DESC");
+  $events_today_temp=SQLSelect("SELECT  DATE_FORMAT( calendar_events.due, '%H:%i' ) due_time,calendar_events.*,calendar_categories.ICON FROM calendar_events left join calendar_categories on calendar_events.calendar_category_id=calendar_categories.id WHERE (TO_DAYS(DUE)=TO_DAYS(NOW()) OR IS_NODATE=1) AND IS_REPEATING!=1 AND IS_TASK=0  ORDER by DUE");
   if ($events_today_temp) {
    foreach($events_today_temp as $k=>$v) {
     $events_today[]=$v;
@@ -298,7 +298,7 @@ function usual(&$out) {
    }
   }
 
-  $tasks_today=SQLSelect("SELECT calendar_events.*,calendar_categories.ICON FROM calendar_events left join calendar_categories on calendar_events.calendar_category_id=calendar_categories.id  WHERE (TO_DAYS(DUE)=TO_DAYS(NOW()) OR IS_NODATE=1) AND IS_DONE=0 AND IS_TASK=1  ORDER BY IS_TASK DESC");
+  $tasks_today=SQLSelect("SELECT  DATE_FORMAT( calendar_events.due, '%H:%i' ) due_time,calendar_events.*,calendar_categories.ICON FROM calendar_events left join calendar_categories on calendar_events.calendar_category_id=calendar_categories.id  WHERE (TO_DAYS(DUE)=TO_DAYS(NOW()) OR IS_NODATE=1) AND IS_DONE=0 AND IS_TASK=1  ORDER BY DUE");
   if ($tasks_today) {
    foreach($tasks_today as $k=>$v) {
     $events_today[]=$v;
@@ -307,21 +307,21 @@ function usual(&$out) {
   }
 
 
-  $events_early_today=SQLSelect("SELECT calendar_events.*,calendar_categories.ICON FROM calendar_events left join calendar_categories on calendar_events.calendar_category_id=calendar_categories.id  WHERE TO_DAYS(DATE(CONCAT_WS('-', DATE_FORMAT(NOW(), '%Y'), DATE_FORMAT(DUE, '%m'), DATE_FORMAT(DUE, '%d'))))=TO_DAYS(NOW()) AND IS_REPEATING=1 AND REPEAT_TYPE=1 AND IS_TASK=0 ORDER BY IS_TASK DESC");
+  $events_early_today=SQLSelect("SELECT  DATE_FORMAT( calendar_events.due, '%H:%i' ) due_time,calendar_events.*,calendar_categories.ICON FROM calendar_events left join calendar_categories on calendar_events.calendar_category_id=calendar_categories.id  WHERE TO_DAYS(DATE(CONCAT_WS('-', DATE_FORMAT(NOW(), '%Y'), DATE_FORMAT(DUE, '%m'), DATE_FORMAT(DUE, '%d'))))=TO_DAYS(NOW()) AND IS_REPEATING=1 AND REPEAT_TYPE=1 AND IS_TASK=0 ORDER BY DUE");
   if ($events_early_today) {
    foreach($events_early_today as $k=>$v) {
     $events_today[]=$v;
     //$calendar_categories[$k1]['EVENTS_TODAY'][]=$v;
    }
   }
-  $events_monthly_today=SQLSelect("SELECT calendar_events.*,calendar_categories.ICON FROM calendar_events left join calendar_categories on calendar_events.calendar_category_id=calendar_categories.id  WHERE TO_DAYS(DATE(CONCAT_WS('-', DATE_FORMAT(NOW(), '%Y'), DATE_FORMAT(NOW(), '%m'), DATE_FORMAT(DUE, '%d'))))=TO_DAYS(NOW()) AND IS_REPEATING=1 AND REPEAT_TYPE=2 AND IS_TASK=0 ORDER BY IS_TASK DESC");
+  $events_monthly_today=SQLSelect("SELECT  DATE_FORMAT( calendar_events.due, '%H:%i' ) due_time,calendar_events.*,calendar_categories.ICON FROM calendar_events left join calendar_categories on calendar_events.calendar_category_id=calendar_categories.id  WHERE TO_DAYS(DATE(CONCAT_WS('-', DATE_FORMAT(NOW(), '%Y'), DATE_FORMAT(NOW(), '%m'), DATE_FORMAT(DUE, '%d'))))=TO_DAYS(NOW()) AND IS_REPEATING=1 AND REPEAT_TYPE=2 AND IS_TASK=0 ORDER BY DUE");
   if ($events_monthly_today) {
    foreach($events_monthly_today as $k=>$v) {
     $events_today[]=$v;
     //$calendar_categories[$k1]['EVENTS_TODAY'][]=$v;
    }
   }
-  $events_weekly_today=SQLSelect("SELECT calendar_events.*,calendar_categories.ICON FROM calendar_events left join calendar_categories on calendar_events.calendar_category_id=calendar_categories.id  WHERE DATE_FORMAT(DUE, '%w')=DATE_FORMAT(NOW(), '%w') AND IS_REPEATING=1 AND REPEAT_TYPE=3 AND IS_TASK=0 ORDER BY IS_TASK DESC");
+  $events_weekly_today=SQLSelect("SELECT  DATE_FORMAT( calendar_events.due, '%H:%i' ) due_time,calendar_events.*,calendar_categories.ICON FROM calendar_events left join calendar_categories on calendar_events.calendar_category_id=calendar_categories.id  WHERE DATE_FORMAT(DUE, '%w')=DATE_FORMAT(NOW(), '%w') AND IS_REPEATING=1 AND REPEAT_TYPE=3 AND IS_TASK=0 ORDER BY DUE");
   if ($events_weekly_today) {
    foreach($events_weekly_today as $k=>$v) {
     $events_today[]=$v;
@@ -339,7 +339,7 @@ function usual(&$out) {
   $calendar_categories[]=array('ID'=>0,'TITLE'=>'Без категории');
   foreach($calendar_categories as $k1=>$v1) {
 
-  $events_past=SQLSelect("SELECT *, (TO_DAYS(DUE)-TO_DAYS(NOW())) as AGE FROM calendar_events WHERE TO_DAYS(DUE)<TO_DAYS(NOW()) AND IS_NODATE=0 AND IS_TASK=1 AND IS_DONE=0 and CALENDAR_CATEGORY_ID=" . $v1['ID'] . " ORDER BY IS_TASK DESC, AGE");
+  $events_past=SQLSelect("SELECT  DATE_FORMAT( calendar_events.due, '%H:%i' ) as due_time,calendar_events.*, (TO_DAYS(DUE)-TO_DAYS(NOW())) as AGE FROM calendar_events WHERE TO_DAYS(DUE)<TO_DAYS(NOW()) AND IS_NODATE=0 AND IS_TASK=1 AND IS_DONE=0 and CALENDAR_CATEGORY_ID=" . $v1['ID'] . " ORDER BY AGE");
   if ($events_past) {
    foreach($events_past as $k=>$v) {
     $days=abs($v['AGE']);
@@ -356,23 +356,23 @@ function usual(&$out) {
   } else {
     $how_soon=SETTINGS_APP_CALENDAR_SOONLIMIT;
   }
-  $events_soon=SQLSelect("SELECT *, (TO_DAYS(DUE)-TO_DAYS(NOW())) as AGE FROM calendar_events WHERE IS_NODATE=0 AND IS_TASK=0 AND (TO_DAYS(DUE)>TO_DAYS(NOW()) AND (TO_DAYS(DUE)-TO_DAYS(NOW())<=".(int)$how_soon.")) and CALENDAR_CATEGORY_ID=" . $v1['ID'] . " ORDER BY AGE");
+  $events_soon=SQLSelect("SELECT  DATE_FORMAT( calendar_events.due, '%H:%i' ) as due_time,calendar_events.*, (TO_DAYS(DUE)-TO_DAYS(NOW())) as AGE FROM calendar_events WHERE IS_NODATE=0 AND IS_TASK=0 AND (TO_DAYS(DUE)>TO_DAYS(NOW()) AND (TO_DAYS(DUE)-TO_DAYS(NOW())<=".(int)$how_soon.")) and CALENDAR_CATEGORY_ID=" . $v1['ID'] . " ORDER BY AGE");
  
-  $tasks_soon=SQLSelect("SELECT *, (TO_DAYS(DUE)-TO_DAYS(NOW())) as AGE FROM calendar_events WHERE IS_NODATE=0 AND IS_TASK=1 AND IS_DONE=0 AND ((TO_DAYS(DUE)>TO_DAYS(NOW()) AND (TO_DAYS(DUE)-TO_DAYS(NOW())<=".(int)$how_soon.")) OR (IS_NODATE=1)) and CALENDAR_CATEGORY_ID=" . $v1['ID'] . " ORDER BY AGE");
+  $tasks_soon=SQLSelect("SELECT  DATE_FORMAT( calendar_events.due, '%H:%i' ) as due_time,calendar_events.*, (TO_DAYS(DUE)-TO_DAYS(NOW())) as AGE FROM calendar_events WHERE IS_NODATE=0 AND IS_TASK=1 AND IS_DONE=0 AND ((TO_DAYS(DUE)>TO_DAYS(NOW()) AND (TO_DAYS(DUE)-TO_DAYS(NOW())<=".(int)$how_soon.")) OR (IS_NODATE=1)) and CALENDAR_CATEGORY_ID=" . $v1['ID'] . " ORDER BY AGE");
   if ($tasks_soon) {
    foreach($tasks_soon as $k=>$v) {
     $events_soon[]=$v;
    }
   }
 
-  $events_early_soon=SQLSelect("SELECT *, TO_DAYS(DATE(CONCAT_WS('-', DATE_FORMAT(NOW(), '%Y'), DATE_FORMAT(DUE, '%m'), DATE_FORMAT(DUE, '%d'))))-TO_DAYS(NOW()) as AGE FROM calendar_events WHERE IS_NODATE=0 AND (TO_DAYS(DATE(CONCAT_WS('-', DATE_FORMAT(NOW(), '%Y'), DATE_FORMAT(DUE, '%m'), DATE_FORMAT(DUE, '%d'))))>TO_DAYS(NOW())) AND (TO_DAYS(DATE(CONCAT_WS('-', DATE_FORMAT(NOW(), '%Y'), DATE_FORMAT(DUE, '%m'), DATE_FORMAT(DUE, '%d'))))-TO_DAYS(NOW())<=".(int)$how_soon.") AND IS_REPEATING=1 AND REPEAT_TYPE=1 AND IS_TASK=0 and CALENDAR_CATEGORY_ID=" . $v1['ID'] . " ORDER BY DUE");
+  $events_early_soon=SQLSelect("SELECT  DATE_FORMAT( calendar_events.due, '%H:%i' ) as due_time,calendar_events.*, TO_DAYS(DATE(CONCAT_WS('-', DATE_FORMAT(NOW(), '%Y'), DATE_FORMAT(DUE, '%m'), DATE_FORMAT(DUE, '%d'))))-TO_DAYS(NOW()) as AGE FROM calendar_events WHERE IS_NODATE=0 AND (TO_DAYS(DATE(CONCAT_WS('-', DATE_FORMAT(NOW(), '%Y'), DATE_FORMAT(DUE, '%m'), DATE_FORMAT(DUE, '%d'))))>TO_DAYS(NOW())) AND (TO_DAYS(DATE(CONCAT_WS('-', DATE_FORMAT(NOW(), '%Y'), DATE_FORMAT(DUE, '%m'), DATE_FORMAT(DUE, '%d'))))-TO_DAYS(NOW())<=".(int)$how_soon.") AND IS_REPEATING=1 AND REPEAT_TYPE=1 AND IS_TASK=0 and CALENDAR_CATEGORY_ID=" . $v1['ID'] . " ORDER BY DUE");
   if ($events_early_soon) {
    foreach($events_early_soon as $k=>$v) {
     $events_soon[]=$v;
    }
   }
 
-  $events_monthly_soon=SQLSelect("SELECT * FROM calendar_events WHERE IS_NODATE=0 AND (TO_DAYS(DATE(CONCAT_WS('-', DATE_FORMAT(NOW(), '%Y'), DATE_FORMAT(NOW(), '%m'), DATE_FORMAT(DUE, '%d'))))>TO_DAYS(NOW())) AND (TO_DAYS(DATE(CONCAT_WS('-', DATE_FORMAT(NOW(), '%Y'), DATE_FORMAT(DUE, '%m'), DATE_FORMAT(DUE, '%d'))))-TO_DAYS(NOW())<=".(int)$how_soon.") AND IS_REPEATING=1 AND REPEAT_TYPE=2 AND IS_TASK=0 and CALENDAR_CATEGORY_ID=" . $v1['ID'] . " ORDER BY DUE");
+  $events_monthly_soon=SQLSelect("SELECT  DATE_FORMAT( calendar_events.due, '%H:%i' ) as due_time,calendar_events.* FROM calendar_events WHERE IS_NODATE=0 AND (TO_DAYS(DATE(CONCAT_WS('-', DATE_FORMAT(NOW(), '%Y'), DATE_FORMAT(NOW(), '%m'), DATE_FORMAT(DUE, '%d'))))>TO_DAYS(NOW())) AND (TO_DAYS(DATE(CONCAT_WS('-', DATE_FORMAT(NOW(), '%Y'), DATE_FORMAT(DUE, '%m'), DATE_FORMAT(DUE, '%d'))))-TO_DAYS(NOW())<=".(int)$how_soon.") AND IS_REPEATING=1 AND REPEAT_TYPE=2 AND IS_TASK=0 and CALENDAR_CATEGORY_ID=" . $v1['ID'] . " ORDER BY DUE");
   if ($events_monthly_soon) {
    foreach($events_monthly_soon as $k=>$v) {
     $events_soon[]=$v;
@@ -388,8 +388,8 @@ function usual(&$out) {
       $days=abs($ev['AGE']);
       if ($days==1) {
        $ev['DAYS']='завтра';
-      } else if ($days==2) {
-       $ev['DAYS']='послезавтра';
+      //} else if ($days==2) {
+      // $ev['DAYS']='послезавтра';
       } else {
        $ev['DAYS']='через ' . $days . ' ' . GetNumberWord($days,array('день','дня','дней'));
       }   
@@ -411,7 +411,7 @@ function usual(&$out) {
 
 
   if (SETTINGS_APP_CALENDAR_SHOWDONE=='1') {
-   $recently_done=SQLSelect("SELECT * FROM calendar_events WHERE IS_TASK=1 AND (IS_DONE=1 OR IS_REPEATING=1) AND TO_DAYS(NOW())-TO_DAYS(DONE_WHEN)<=1")  ;
+   $recently_done=SQLSelect("SELECT  DATE_FORMAT( calendar_events.due, '%H:%i' ) as due_time, calendar_events.* FROM calendar_events WHERE IS_TASK=1 AND (IS_DONE=1 OR IS_REPEATING=1) AND TO_DAYS(NOW())-TO_DAYS(DONE_WHEN)<=1")  ;
    if ($recently_done) {
     $out['RECENTLY_DONE']=$recently_done;
    }
@@ -444,7 +444,7 @@ function usual(&$out) {
 
   } else {
    $out['TITLE']=$title;
-   $out['DUE']=date('Y-m-d');
+   $out['DUE']=date('Y-m-d H:i:00');
    if ($out['TITLE']) {
     $others=SQLSelect("SELECT ID, TITLE, IS_DONE FROM calendar_events WHERE TITLE LIKE '%".DBSafe($out['TITLE'])."%' ORDER BY ID DESC");
     if ($others) {
@@ -472,9 +472,9 @@ function usual(&$out) {
    global $due;
    $rec['DUE']=$due;
    if (!$rec['DUE']) {
-    $rec['DUE']=date('Y-m-d');
+    $rec['DUE']=date('Y-m-d H:i'.':00');
    }
-
+ 
    global $is_repeating;
    $rec['IS_REPEATING']=(int)$is_repeating;
 
@@ -528,8 +528,8 @@ function usual(&$out) {
   }
 
   outHash($rec, $out);
-  $out['USERS']=SQLSelect("SELECT * FROM users ORDER BY NAME");
-  $out['LOCATIONS']=SQLSelect("SELECT * FROM gpslocations ORDER BY TITLE");
+  //$out['USERS']=SQLSelect("SELECT * FROM users ORDER BY NAME");
+  //$out['LOCATIONS']=SQLSelect("SELECT * FROM gpslocations ORDER BY TITLE");
   $out['SCRIPTS']=SQLSelect("SELECT ID, TITLE FROM scripts ORDER BY TITLE");
   $out['CALENDAR_CATEGORIES']=SQLSelect("SELECT ID, TITLE from calendar_categories ORDER BY TITLE");
  }
@@ -549,30 +549,33 @@ function usual(&$out) {
   $rec['DONE_WHEN']=date('Y-m-d H:i:s');
   $rec['IS_DONE']=1;
 
-  $tmp=explode('-', $rec['DUE']);
-  $due_time=mktime(1, 1, 1, $tmp[1], $tmp[2], $tmp[0]);
+  //$tmp=explode('-', $rec['DUE']);
+  //$due_time=mktime(1, 1, 1, $tmp[1], $tmp[2], $tmp[0]);
+  $due_time=strtotime(date('Y-m-d H:i:00',strtotime($rec['DUE'])));
+  $part_due = date_parse($rec['DUE']);
 
   if ($rec['IS_REPEATING']) {
    $rec['IS_DONE']=0;
    if ($rec['REPEAT_TYPE']==1) {
     // yearly task
-    $due_time_next_year=mktime(1, 1, 1, $tmp[1], $tmp[2], $tmp[0]+1);
-    $rec['DUE']=date('Y-m-d', $due_time_next_year);
+    //$due_time_next_year=mktime(1, 1, 1, $tmp[1], $tmp[2], $tmp[0]+1);
+    $due_time_next_year=mktime($part_due['hour'],$part_due['minute'],0,$part_due['month'],$part_due['day'],$part_due['year']+1);
+    $rec['DUE']=date('Y-m-d  H:i:00', $due_time_next_year);
    } elseif ($rec['REPEAT_TYPE']==2) {
     // monthly task
     $time_next_month=$due_time+31*24*60*60;
-    $due_time_next_month=mktime(1, 1, 1, date('m', $time_next_month), $tmp[2], date('Y', $time_next_month));
-    $rec['DUE']=date('Y-m-d', $due_time_next_month);
+    $due_time_next_month=mktime($part_due['hour'],$part_due['minute'],0, date('m', $time_next_month), $part_due['day'], date('Y', $time_next_month));
+    $rec['DUE'] = date('Y-m-d  H:i:00', $due_time_next_month);
    } elseif ($rec['REPEAT_TYPE']==3) {
     // weekly task
     $due_time_next_week=$due_time+7*24*60*60;
-    $rec['DUE']=date('Y-m-d', $due_time_next_week);
+    $rec['DUE']=date('Y-m-d  H:i:00', $due_time_next_week);
    } elseif ($rec['REPEAT_TYPE']==9) {
     // custom repeat task
     if ($rec['IS_REPEATING_AFTER']) {
-     $rec['DUE']=date('Y-m-d', time()+$rec['REPEAT_IN']*24*60*60);
+     $rec['DUE']=date('Y-m-d  H:i:00', time()+$rec['REPEAT_IN']*24*60*60);
     } else {
-     $rec['DUE']=date('Y-m-d', $due_time+$rec['REPEAT_IN']*24*60*60);
+     $rec['DUE']=date('Y-m-d  H:i:00', $due_time+$rec['REPEAT_IN']*24*60*60);
     }
    }
   }
@@ -722,7 +725,7 @@ foreach( $calendar as $day ){
       $hd_name='Выходной день';
 //     $arHolidays[] = array('DAY'=>substr($d, 3, 2),'MONTH'=>substr($d, 0, 2),'HD_NAME'=>$hd_name);
      $Record = Array();
-     $Record['DUE'] = $year . '-' . substr($d, 0, 2) . '-' . substr($d, 3, 2) ;
+     $Record['DUE'] = $year . '-' . substr($d, 0, 2) . '-' . substr($d, 3, 2) .' 00:00:00';
      $Record['CALENDAR_CATEGORY_ID'] = $hl_ID;
      $Record['TITLE'] = $hd_name;
      $Record['ID']=SQLInsert('calendar_events', $Record);
@@ -731,7 +734,7 @@ foreach( $calendar as $day ){
     elseif ( $day->attributes()->t ==3 ) {
 //     $arWorkdays[]=array('DAY'=>substr($d, 3, 2),'MONTH'=>substr($d, 0, 2));
      $Record = Array();
-     $Record['DUE'] = $year . substr($d, 0, 2) . substr($d, 3, 2) ;
+     $Record['DUE'] = $year . substr($d, 0, 2) . substr($d, 3, 2) .' 00:00:00' ;
      $Record['CALENDAR_CATEGORY_ID'] = $workdays_ID;
      $Record['TITLE'] = 'Перенесенный рабочий день';
      $Record['ID']=SQLInsert('calendar_events', $Record);
@@ -787,7 +790,7 @@ calendar_categories - Categories
  calendar_events: TITLE varchar(255) NOT NULL DEFAULT ''
  calendar_events: SYSTEM varchar(255) NOT NULL DEFAULT ''
  calendar_events: NOTES text
- calendar_events: DUE date
+ calendar_events: DUE datetime
  calendar_events: ADDED datetime
  calendar_events: DONE_WHEN datetime
  calendar_events: IS_TASK int(3) NOT NULL DEFAULT '0'

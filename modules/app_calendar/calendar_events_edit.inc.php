@@ -21,12 +21,13 @@
    $rec['NOTES']=$notes;
   //updating 'DUE' (date)
    global $due;
-   $rec['DUE']=toDBDate($due);
+   $rec['DUE']=date('Y-m-d H:i:00',strtotime($due));
   //updating 'ADDED' (datetime)
-   global $added_date;
-   global $added_minutes;
-   global $added_hours;
-   $rec['ADDED']=toDBDate($added_date)." $added_hours:$added_minutes:00";
+   global $added;
+   //global $added_minutes;
+   //global $added_hours;
+   //$rec['ADDED']=toDBDate($added_date)." $added_hours:$added_minutes:00";
+   $rec['ADDED']=date('Y-m-d H:i:00',strtotime($added));
   //updating 'IS_TASK' (int)
    global $is_task;
    $rec['IS_TASK']=(int)$is_task;
@@ -63,6 +64,7 @@
   //updating 'DONE_CODE' (text)
    global $done_code;
    $rec['DONE_CODE']=$done_code;
+
   //UPDATING RECORD
    if ($ok) {
     if ($rec['ID']) {
@@ -77,11 +79,15 @@
    }
   }
    if ($rec['DUE']!='') {
-    $rec['DUE']=fromDBDate($rec['DUE']);
+    //$rec['DUE']=fromDBDate1($rec['DUE']);
+    $rec['DUE']=date('Y-m-d H:i:00',strtotime($rec['DUE']));
    }
+
   if ($rec['ADDED']!='') {
+   $rec['ADDED']=date('Y-m-d H:i:00',strtotime($rec['ADDED']));
+/*
    $tmp=explode(' ', $rec['ADDED']);
-   $out['ADDED_DATE']=fromDBDate($tmp[0]);
+   $out['ADDED_DATE']=fromDBDate1($tmp[0]);
    $tmp2=explode(':', $tmp[1]);
    $added_hours=$tmp2[0];
    $added_minutes=$tmp2[1];
@@ -103,6 +109,7 @@
    } else {
     $out['ADDED_HOURS'][]=array('TITLE'=>$title);
    }
+*/
   }
   //options for 'REPEAT_TYPE' (select)
   $tmp=explode('|', DEF_REPEAT_TYPE_OPTIONS);
@@ -167,6 +174,7 @@
    if ($rec['CALENDAR_CATEGORY_ID']==$tmp[$i]['ID']) $tmp[$i]['SELECTED']=1;
   }
   $out['CALENDAR_CATEGORY_ID_OPTIONS']=$tmp;
+  $out['DUE_TIME']=date('H:i',strtotime($due));
   if (is_array($rec)) {
    foreach($rec as $k=>$v) {
     if (!is_array($v)) {

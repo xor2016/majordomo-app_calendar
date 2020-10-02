@@ -112,7 +112,7 @@ for ($month=$m1;$month<=$m2;$month++) {
                   $calendar_day.='" data-toggle="tooltip" title="' . $ev_tips . '">';
                 }
                 else {
-                 $calendar_day='<div class="calendar_hd' . $today_class . '" data-toggle="tooltip" title="' . $hd_name . ' ' . $ev_tips .'">';
+                 $calendar_day='<div class="calendar_hd' . $today_class . '" data-toggle="tooltip" title="' . $ev_tips .'">';
                 }
 
 

@@ -49,7 +49,7 @@ input[type=checkbox] {height: 15px;width: 15px;vertical-align: bottom;margin-top
  <tr>
   <td valign="top">[#if IS_TASK="1"#]<img style="height: 25px;" src="../cms/calendar/task.svg" title="Задача" alt="Задача">[#else#]<img style="height: 25px;" src="../cms/calendar/notification.svg" title="Событие" alt="Событие">[#endif#]</td>
   <td>[#if ICON!=""#]<img style="width: 25px;" src="<#ROOTHTML#>cms/calendar/[#ICON#]">[#endif ICON#]</td>
-  <td id="yestask" width="100%"><span id="task_title[#ID#]">[#TITLE#]</span> <div class="menu"><a href="?view_mode=edit&id=[#ID#]"><img style="height: 15px;" src="../cms/calendar/settings.svg" /></a>[#if IS_TASK="1"#] | <input type="checkbox" name="task[#ID#]" class="tasks" value="[#ID#]" data-role="none">[#endif#]</div> [#if NOTES=""#][#else#]<span style="color: grey; font-style: italic;"> — [#NOTES#]</span>[#endif#]</td>
+  <td id="yestask" width="100%"><span id="task_title[#ID#]">[#if due_time!="00:00"#]([#due_time#]) [#endif#][#TITLE#]</span> <div class="menu"><a href="?view_mode=edit&id=[#ID#]"><img style="height: 15px;" src="../cms/calendar/settings.svg" /></a>[#if IS_TASK="1"#] | <input type="checkbox" name="task[#ID#]" class="tasks" value="[#ID#]" data-role="none">[#endif#]</div> [#if NOTES=""#][#else#]<span style="color: grey; font-style: italic;"> — [#NOTES#]</span>[#endif#]</td>
   <!--td><a style="font-size: 13px;" href="?view_mode=edit&id=[#ID#]"><#LANG_EDIT#></a></td-->
  </tr>
  [#end EVENTS_TODAY#]
@@ -62,7 +62,7 @@ input[type=checkbox] {height: 15px;width: 15px;vertical-align: bottom;margin-top
 
 [#begin CALENDAR_CATEGORIES#]
 [#if REC_COUNT>0#]
-<h1 class="title" style="padding-top: 15px;">[#if ICON!=""#]<img style="width: 40px;" src="<#ROOTHTML#>cms/calendar/[#ICON#]">[#else#]<img style="width: 40px;" src="<#ROOTHTML#>cms/calendar/default.gif">[#endif ICON#] [#TITLE#]</h1>
+<h1 class="title" style="padding-top: 15px;">[#if ICON!=""#]<img style="width: 40px;" src="<#ROOTHTML#>cms/calendar/[#ICON#]">[#else#]<img style="width: 40px;" src="<#ROOTHTML#>cms/calendar/default.gif">[#endif ICON#][#TITLE#]</h1>
 <table border="0">
 [#if EVENTS_PAST#]
 <h2 style="color: #ff0000; font-size: 18px;margin-top: 5px;"><#LANG_PAST_DUE#></h2>
