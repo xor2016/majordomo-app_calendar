@@ -471,7 +471,7 @@ function usual(&$out) {
 
    global $due;
    $rec['DUE']=$due;
-   if (!$rec['DUE']) {
+   if (!$rec['DUE'] && $is_nodate==0) {
     $rec['DUE']=date('Y-m-d H:i'.':00');
    }
  
@@ -497,18 +497,35 @@ function usual(&$out) {
 
    global $is_nodate;
    $rec['IS_NODATE']=(int)$is_nodate;
+   if ($is_nodate) {
+    $rec['DUE']= null; //no due
+    $rec['IS_REPEATING']=0; //no repeat
+   }
+
 
    global $user_id;
    $rec['USER_ID']=(int)$user_id;
 
-   global $location_id;
-   $rec['LOCATION_ID']=(int)$location_id;
+   //global $location_id;
+   //$rec['LOCATION_ID']=(int)$location_id;
 
    global $calendar_category_id;
    $rec['CALENDAR_CATEGORY_ID']=(int)$calendar_category_id;
 	
    global $done_script_id;
    $rec['DONE_SCRIPT_ID']=(int)$done_script_id;
+   ////////////////////////////////add by lsv 20201002
+   global $done_code;
+   $rec['DONE_CODE'] = $done_code;
+   global $is_remind;
+   $rec['IS_REMIND'] = (int)$is_remind;
+   global $remind_time;
+   $rec['REMIND_TIME'] = $remind_time;
+   global $remind_code;
+   $rec['REMIND_CODE'] = $remind_code;
+   global $all_day;
+   $rec['ALL_DAY'] = (int)$all_day;
+   ////////////////////////////////
 
    if ($ok) {
     if ($rec['ID']) {
@@ -528,7 +545,7 @@ function usual(&$out) {
   }
 
   outHash($rec, $out);
-  //$out['USERS']=SQLSelect("SELECT * FROM users ORDER BY NAME");
+  $out['USERS']=SQLSelect("SELECT * FROM users ORDER BY NAME");
   //$out['LOCATIONS']=SQLSelect("SELECT * FROM gpslocations ORDER BY TITLE");
   $out['SCRIPTS']=SQLSelect("SELECT ID, TITLE FROM scripts ORDER BY TITLE");
   $out['CALENDAR_CATEGORIES']=SQLSelect("SELECT ID, TITLE from calendar_categories ORDER BY TITLE");
@@ -551,10 +568,14 @@ function usual(&$out) {
 
   //$tmp=explode('-', $rec['DUE']);
   //$due_time=mktime(1, 1, 1, $tmp[1], $tmp[2], $tmp[0]);
-  $due_time=strtotime(date('Y-m-d H:i:00',strtotime($rec['DUE'])));
-  $part_due = date_parse($rec['DUE']);
 
   if ($rec['IS_REPEATING']) {
+
+   $due_time = strtotime(date('Y-m-d H:i:00',strtotime($rec['DUE']))); //unixtime
+   //от греха поставим сегодня для пусто
+   if($due_time)$due_time=time();
+   $part_due = date_parse($rec['DUE']);
+
    $rec['IS_DONE']=0;
    if ($rec['REPEAT_TYPE']==1) {
     // yearly task
@@ -580,14 +601,14 @@ function usual(&$out) {
    }
   }
 
-  $rec['LOG']=date('Y-m-d H:i:s').' Task marked DONE'."\n".$rec['LOG'];
+  //$rec['LOG']=date('Y-m-d H:i:s').' Task marked DONE'."\n".$rec['LOG'];
 
   SQLUpdate('calendar_events', $rec);
 
   if ($rec['DONE_SCRIPT_ID']) {
-   runScript($rec['DONE_SCRIPT_ID'], $rec);
+   runScriptSafe($rec['DONE_SCRIPT_ID'], $rec);
   }
-
+  //todo run done_code
  }
 
 /**
@@ -807,6 +828,10 @@ calendar_categories - Categories
  calendar_events: DONE_SCRIPT_ID int(10) NOT NULL DEFAULT '0'
  calendar_events: DONE_CODE text
  calendar_events: LOG text
+ calendar_events: IS_REMIND int(3) NOT NULL DEFAULT '0'
+ calendar_events: REMIND_TIME datetime DEFAULT NULL
+ calendar_events: REMIND_CODE text
+ calendar_events: ALL_DAY int(3) NOT NULL DEFAULT '1'
 
  calendar_categories: ID int(10) unsigned NOT NULL auto_increment
  calendar_categories: TITLE varchar(255) NOT NULL DEFAULT ''

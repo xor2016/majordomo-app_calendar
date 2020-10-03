@@ -24,9 +24,6 @@
    $rec['DUE']=date('Y-m-d H:i:00',strtotime($due));
   //updating 'ADDED' (datetime)
    global $added;
-   //global $added_minutes;
-   //global $added_hours;
-   //$rec['ADDED']=toDBDate($added_date)." $added_hours:$added_minutes:00";
    $rec['ADDED']=date('Y-m-d H:i:00',strtotime($added));
   //updating 'IS_TASK' (int)
    global $is_task;
@@ -52,9 +49,6 @@
   //updating 'USER_ID' (select)
    global $user_id;
    $rec['USER_ID']=$user_id;
-  //updating 'LOCATION_ID' (select)
-   global $location_id;
-   $rec['LOCATION_ID']=$location_id;
   //updating 'CALENDAR_CATEGORY_ID' (select)
    global $calendar_category_id;
    $rec['CALENDAR_CATEGORY_ID']=$calendar_category_id;
@@ -64,8 +58,16 @@
   //updating 'DONE_CODE' (text)
    global $done_code;
    $rec['DONE_CODE']=$done_code;
+   global $is_remind;
+   $rec['IS_REMIND'] = (int)$is_remind;
+   global $remind_time;
+   $rec['REMIND_TIME'] = date('Y-m-d H:i:00',strtotime($remind_time));
+   global $remind_code;
+   $rec['REMIND_CODE'] = $remind_code;
+   global $all_day;
+   $rec['ALL_DAY'] = (int)$all_day;  
 
-  //UPDATING RECORD
+//UPDATING RECORD
    if ($ok) {
     if ($rec['ID']) {
      SQLUpdate($table_name, $rec); // update
@@ -78,38 +80,12 @@
     $out['ERR']=1;
    }
   }
-   if ($rec['DUE']!='') {
-    //$rec['DUE']=fromDBDate1($rec['DUE']);
+   if ($rec['DUE']!='' && $rec['IS_NODATE']==0) {
     $rec['DUE']=date('Y-m-d H:i:00',strtotime($rec['DUE']));
    }
 
   if ($rec['ADDED']!='') {
    $rec['ADDED']=date('Y-m-d H:i:00',strtotime($rec['ADDED']));
-/*
-   $tmp=explode(' ', $rec['ADDED']);
-   $out['ADDED_DATE']=fromDBDate1($tmp[0]);
-   $tmp2=explode(':', $tmp[1]);
-   $added_hours=$tmp2[0];
-   $added_minutes=$tmp2[1];
-  }
-  for($i=0;$i<60;$i++) {
-   $title=$i;
-   if ($i<10) $title="0$i";
-   if ($title==$added_minutes) {
-    $out['ADDED_MINUTES'][]=array('TITLE'=>$title, 'SELECTED'=>1);
-   } else {
-    $out['ADDED_MINUTES'][]=array('TITLE'=>$title);
-   }
-  }
-  for($i=0;$i<24;$i++) {
-   $title=$i;
-   if ($i<10) $title="0$i";
-   if ($title==$added_hours) {
-    $out['ADDED_HOURS'][]=array('TITLE'=>$title, 'SELECTED'=>1);
-   } else {
-    $out['ADDED_HOURS'][]=array('TITLE'=>$title);
-   }
-*/
   }
   //options for 'REPEAT_TYPE' (select)
   $tmp=explode('|', DEF_REPEAT_TYPE_OPTIONS);
@@ -152,18 +128,7 @@
   }
 
   $out['USER_ID_OPTIONS']=$tmp;
-  //options for 'LOCATION_ID' (select)
-//  $tmp=SQLSelect("SELECT ID, TITLE FROM gpslocations ORDER BY TITLE");
-  $tmp=SQLSelect("SELECT ID, TITLE FROM calendar_categories ORDER BY TITLE");
-  $gpslocations_total=count($tmp);
-  for($gpslocations_i=0;$gpslocations_i<$gpslocations_total;$gpslocations_i++) {
-   $location_id_opt[$tmp[$gpslocations_i]['ID']]=$tmp[$gpslocations_i]['TITLE'];
-  }
 
-  for($i=0;$i < $gpslocations_total; $i++) {
-   if ($rec['LOCATION_ID']==$tmp[$i]['ID']) $tmp[$i]['SELECTED']=1;
-  }
-  $out['LOCATION_ID_OPTIONS']=$tmp;
   //options for 'CALENDAR_CATEGORY_ID' (select)
   $tmp=SQLSelect("SELECT ID, TITLE FROM calendar_categories ORDER BY TITLE");
   $calendar_categories_total=count($tmp);
