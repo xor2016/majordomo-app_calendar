@@ -2,6 +2,7 @@
 /*
 * @version 0.1 (wizard)
 */
+  echo('inc');
   if ($this->owner->name=='panel') {
    $out['CONTROLPANEL']=1;
   }
@@ -39,7 +40,10 @@
    $rec['REPEAT_TYPE']=$repeat_type;
   //updating 'WEEK_DAYS' (varchar)
    global $week_days;
-   $rec['WEEK_DAYS']=$week_days;
+   $rec['WEEK_DAYS'] = @implode(',', $week_days);
+   if (is_null($rec['WEEK_DAYS'])) {
+        $rec['WEEK_DAYS'] = '';
+    }
   //updating 'IS_REPEATING_AFTER' (int)
    global $is_repeating_after;
    $rec['IS_REPEATING_AFTER']=(int)$is_repeating_after;
@@ -66,7 +70,8 @@
    $rec['REMIND_CODE'] = $remind_code;
    global $all_day;
    $rec['ALL_DAY'] = (int)$all_day;  
-
+   global $autodone;
+   $rec['AUTODONE'] = $autodone;
 //UPDATING RECORD
    if ($ok) {
     if ($rec['ID']) {
@@ -85,8 +90,9 @@
    }
 
   if ($rec['ADDED']!='') {
-   $rec['ADDED']=date('Y-m-d H:i:00',strtotime($rec['ADDED']));
+   $rec['ADDED']=date('Y-m-d H:i:s',strtotime($rec['ADDED']));
   }
+ // $out['TESTING']='its testing';
   //options for 'REPEAT_TYPE' (select)
   $tmp=explode('|', DEF_REPEAT_TYPE_OPTIONS);
   foreach($tmp as $v) {
@@ -111,6 +117,8 @@
          $rec['REPEAT_TYPE']=$out['REPEAT_TYPE_OPTIONS'][$i]['TITLE'];
       }
    }
+
+
 
   //options for 'USER_ID' (select)
   $tmp=SQLSelect("SELECT ID, NAME FROM users ORDER BY NAME");
@@ -148,4 +156,24 @@
    }
   }
   outHash($rec, $out);
-?>
+
+$w_days = array();
+if ($rec['WEEK_DAYS']!=='') {
+  $w_days = explode(',', $rec['WEEK_DAYS']);
+}
+
+$days = array( "Пн", "Вт","Ср","Чт","Пт","Сб","Вс");
+for ($i = 0; $i < 7; $i++) {
+    $out['WDAYS'][] = array(
+         'ID'    => $i,
+         'NSHORT' => $days[$i],
+         'VALUE' => $i,
+         'SELECTED' => (in_array($i, $w_days))?1:0,
+   );
+    
+}
+
+//$out['USERS'] = SQLSelect('SELECT `ID`, `NAME` FROM `users` ORDER BY `NAME`');
+
+//end file
+

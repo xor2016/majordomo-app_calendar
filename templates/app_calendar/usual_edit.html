@@ -28,8 +28,10 @@
    &nbsp;&nbsp;
    <label><input type="radio" name="is_task" id="is_task" value="1"[#if IS_TASK="1"#] checked[#endif#] data-role="none"> <#LANG_TASK#></label>
    <span id="task_done_block"[#if IS_TASK!="1"#] style="display:none"[#endif#]>
-   <b><label><input type="checkbox" name="is_done" value="1"[#if IS_DONE="1"#] checked[#endif#] data-role="none"> <#LANG_DONE#></label></b>
+   <label><input type="checkbox" name="is_done" value="1"[#if IS_DONE="1"#] checked[#endif#] data-role="none"> <#LANG_DONE#></label>
    </span>
+   <span id="autodone_block"[#if IS_NODATE="1" || IS_TASK!="1"#] style="display:none"[#endif#]> 
+   <input type="checkbox" name="autodone" value="1"[#if AUTODONE="1"#] checked[#endif#] data-role="none"> Автозавершение по сроку</span>
   </td>
  </tr>
 
@@ -38,54 +40,22 @@
   <td>
   <label><input type="checkbox" name="is_nodate" id="is_nodate" value="1"[#if IS_NODATE="1"#] checked[#endif#] data-role="none">
   без срока</label>
-
+<span id="show_date"[#if IS_NODATE="1"#] style="display:none"[#endif#]>
+   <label><input type="checkbox" name="all_day" id="all_day" value="1"[#if ALL_DAY="1"#] checked[#endif#] data-role="none">
+  весь день</label>
   <label><input type="checkbox" name="is_repeating" id="is_repeating" value="1"[#if IS_REPEATING="1"#] checked[#endif#] data-role="none">
-  с повторами</label>
+  с повторами</label></span>
 
   </td>
-<script language="javascript">
 
- $('#is_task').click (function ()
-  {
-  var thisCheck = $(this);
-  if (thisCheck.is(':checked')) {
-   $('#task_done_block').show();
-  } else {
-   $('#task_done_block').hide();
-  }
- }
- );
-
- $('#is_event').click (function ()
-  {
-  var thisCheck = $(this);
-  if (thisCheck.is(':checked')) {
-   $('#task_done_block').hide();
-  } else {
-   $('#task_done_block').show();
-  }
- }
- );
-
- $('#is_nodate').click (function ()
-  {
-  var thisCheck = $(this);
-  if (thisCheck.is(':checked')) {
-   $('#st_time').hide();
-  } else {
-   $('#st_time').show();
-  }
- }
- );
-
-</script>
  </tr>
- <tr>
+
+<tr>
 <td>&nbsp;</td>
 <td>
 <input type="hidden" class="form-control" id="due" name="due" value="[#DUE#]" />
 <div class="form-group"  style="width: 20%;" >
-  <div class="input-group" id="st_time" [#if IS_NODATE="1"#] style="display:none;"[#endif#] >
+  <div  class="input-group" id="st_time" [#if IS_NODATE="1"#] style="display: none"[#endif#] >
                     <input  type="text" class="form-control" />
                     <span class="input-group-addon">
                         <i class="glyphicon glyphicon-calendar"></i>
@@ -93,20 +63,11 @@
   </div>
 </div>
 </td>
-
-<script language="javascript">
-$(function () {
-$('#st_time').datetimepicker({format: 'DD.MM.YYYY HH:mm',locale: 'ru',defaultDate: '[#DUE#]', sideBySide: true});
-$('#st_time').on("dp.change", function (e) {
-var date1 = $('#st_time input').val();
-var date2 = moment(date1,'DD.MM.YYYY HH:mm').format('YYYY-MM-DD HH:mm:ss');
-document.getElementById('due').value = date2;
-});
-});
-</script>
  </tr>
+
  <tr>
-  <td valign="top">&nbsp;</td>
+  <td valign="top">
+</td>
   <td valign="top">
    <div id="repeat_type_block"[#if IS_REPEATING!="1"#] style="display:none"[#endif#]>
    <select style="width: auto;" class="form-control" name="repeat_type" id="repeat_type" data-role="none">
@@ -122,71 +83,85 @@ document.getElementById('due').value = date2;
    <label><input type="checkbox" name="is_repeating_after" value="1"[#if IS_REPEATING_AFTER="1"#] checked[#endif#] data-role="none">
    <#LANG_AFTER_COMPLETION#></label>
    </div>
-   </div>
+<div id="restore_weekly_block" [#if REPEAT_TYPE!="3"#] style="display:none"[#endif#]>
+По дням:
+[#begin WDAYS#]
+ 			<input type="checkbox" name="week_days[]" value="[#VALUE#]"[#if SELECTED="1"#] checked[#endif#]>[#DNAME#] 
+[#end WDAYS#]
+</div>
 
-<script language="javascript">
-
- $('#is_repeating').click (function ()
-  {
-  var thisCheck = $(this);
-  if (thisCheck.is(':checked')) {
-   $('#repeat_type_block').show();
-  } else {
-   $('#repeat_type_block').hide();
-  }
- }
- );
-
- $('#repeat_type').change (function ()
-  {
-  var thisCheck = $(this);
-  if (thisCheck.val()=='9') {
-   $('#restore_in_block').show();
-  } else {
-   $('#restore_in_block').hide();
-  }
- }
- );
-
-
-</script>
+ </div>
 
   </td>
  </tr>
+<tr>
+<td>&nbsp;</td>
+<td>   
 
+</td>
+</tr>
  <tr>
+  <td valign="top">&nbsp;</td>
+  <td valign="top">
+  <label><input type="checkbox" name="is_remind" id="is_remind" value="1" [#if IS_REMIND="1"#] checked[#endif#] data-role="none">Напомнить</label>
+  </td>
+ </tr>
+
+<tr>
+<td colspan="2">
+<div id="remind_details" style="width: 100%; [#if IS_REMIND!="1"#]display:none[#endif#]">
+<table width="100%" border="0">
+
+<tr>
+ <td>
+ </td>
+ <td>
+За <input type="text" size="3" maxlength="2" name="remind_in" value="[#REMIND_IN#][#if REMIND_IN=""#]15[#endif#]">
+   <select name="remind_type" id="remind_type" >
+    <option value="1"[#if REMIND_TYPE=="1"#] selected[#endif#]>минут
+    <option value="2"[#if REMIND_TYPE=="2"#] selected[#endif#]>часов
+    <option value="3"[#if REMIND_TYPE=="3"#] selected[#endif#]>дней
+   </select> или
+   <select name="remind_type" id="remind_type" >
+    <option value="4"[#if REMIND_TYPE=="4"#] selected[#endif#]>утром
+    <option value="5"[#if REMIND_TYPE=="5"#] selected[#endif#]>вечером накануне
+   </select>
+ </td>
+</tr>
+
+<tr>
+<td valign="top" style="width: 10%;">Код напоминания:</td>
+<td valign="top" style="width: auto;"><textarea style="width: auto;" class="form-control" name="remind_code" cols="40" rows="3">[#REMIND_CODE#]</textarea></td>
+</tr>
+</table>
+</div>
+</td>
+</tr>
+
+<tr>
+<td valign="top" style="width: 10%;">&nbsp;</td>
+<td valign="top" style="width: auto;">&nbsp;</td>
+</tr>
+
+<tr>
   <td valign="top">&nbsp;</td>
   <td valign="top">
   <label><input type="checkbox" name="advanced" id="advanced" value="1" data-role="none"> <#LANG_MORE_DETAILS#></label>
   </td>
- </tr>
+</tr>
 
-<script language="javascript">
-  $('#advanced').click (function ()
-  {
-  var thisCheck = $(this);
-  if (thisCheck.is(':checked')) {
-   $('#advanced_detais').show();
-  } else {
-   $('#advanced_detais').hide();
-  }
- }
- );
-</script>
-
- <tr>
-  <td valign="top" colspan="2">
-   <div id="advanced_detais" style="width: 50%;display:none">
-<table width="100%" border="0">
 <tr>
+<td colspan="2">
+<div id="advanced_detais" style="width: 100%;display:none">
+<table width="100%" border="0">
 
  <tr>
-  <td valign="top"><#LANG_NOTES#>:</td>
-  <td valign="top">
+  <td valign="top" style="width: 10%;"><#LANG_NOTES#>:</td>
+  <td valign="top" style="width: auto;">
   <textarea style="width: auto;" class="form-control" name="notes" cols="40" rows="3">[#NOTES#]</textarea>
-  </td>
- </tr>
-
+</td>
+</tr>
+<tr>
   <td valign="top"><#LANG_USER#>:</td>
   <td valign="top">
   <select style="width: auto;" class="form-control" name="user_id">
@@ -211,20 +186,11 @@ document.getElementById('due').value = date2;
   </td>
  </tr>
 
- <tr>
-  <td valign="top">Выполнить код:</td>
-  <td valign="top">
-  <textarea style="width: auto;" class="form-control" name="done_code" cols="40" rows="3">[#DONE_CODE#]</textarea>
-  (<#LANG_WHEN_TASK_WILL_BE_DONE#>)
-  </td>
- </tr>
 
 </table>
-   </div>
-  </td>
- </tr>
-
-
+</div>
+</td>
+</tr>
  <tr>
   <td valign="top">&nbsp;</td>
   <td valign="top"><input style="margin-top: 20px;" class="btn btn-default" type="submit" name="submit" value="<#LANG_SUBMIT#>">
@@ -241,13 +207,12 @@ document.getElementById('due').value = date2;
 </table>
 </form>
 </div>
-
 [#if OTHERS#]
 &nbsp;
 <div style="margin:30px;">
 <h1><#LANG_SIMILAR_ITEMS#></h1>
 <table width="100%" border="0">
- [#begin OTHERS#]
+ [# OTHERS#]
  <tr>
   <td width="90%">[#if IS_DONE="1"#]<strike>[#endif#][#TITLE#]</td>
   <td><a href="?view_mode=edit&id=[#ID#]"><#LANG_EDIT#></a></td>
@@ -256,3 +221,126 @@ document.getElementById('due').value = date2;
 </table>
 </div>
 [#endif OTHERS#]
+
+<script language="javascript">
+
+ $('#is_task').click (function ()
+  {
+  var thisCheck = $(this);
+  if (thisCheck.is(':checked')) {
+   $('#task_done_block').show();
+   //$('#st_time').show();
+   $('#autodone_block').show();
+  } else {
+   $('#task_done_block').hide();
+   //$('#st_time').show();
+   $('#autodone_block').hide();
+  }
+ }
+ );
+
+ $('#is_event').click (function ()
+  {
+  var thisCheck = $(this);
+  if (thisCheck.is(':checked')) {
+   $('#task_done_block').hide();
+   $('#autodone_block').hide();
+  } else {
+   $('#task_done_block').show();
+   $('#autodone_block').show();
+  }
+ }
+ );
+
+ $('#is_nodate').click (function ()
+  {
+  var thisCheck = $(this);
+  if (thisCheck.is(':checked')) {
+   $('#show_date').hide();
+   $('#st_time').hide();
+   $('#autodone_block').hide();
+    //document.getElementById('due').value = null;//set datetime to null
+  } else {
+   $('#show_date').show();
+   $('#st_time').show();
+   $('#autodone_block').show();
+  }
+ }
+ );
+ $('#all_day').click (function ()
+  {
+  var thisCheck = $(this);
+  if (thisCheck.is(':checked')) {
+  var date1 = $('#st_time input').val();//datetime from datetimepicker
+  var date2 = moment(date1,'DD.MM.YYYY 00:00').format('YYYY-MM-DD HH:mm:ss');//set time 00:00
+  $('#st_time').data("DateTimePicker").date(moment(date2,'YYYY-MM-DD HH:mm:ss'));
+  document.getElementById('due').value = date2;
+  } 
+ }
+ );
+
+
+ $('#is_repeating').click (function ()
+  {
+  var thisCheck = $(this);
+  if (thisCheck.is(':checked')) {
+   $('#repeat_type_block').show();
+  } else {
+   $('#repeat_type_block').hide();
+  }
+ }
+ );
+
+ $('#repeat_type').change (function ()
+  {
+  var thisCheck = $(this);
+  if (thisCheck.val()=='9') {
+   $('#restore_in_block').show();
+  } else {
+   $('#restore_in_block').hide();
+  }
+  if (thisCheck.val()=='3') {
+   $('#restore_weekly_block').show();
+  } else {
+   $('#restore_weekly_block').hide();
+  }
+
+
+ }
+ );
+
+ $('#is_remind').click (function ()
+  {
+  var thisCheck = $(this);
+  if (thisCheck.is(':checked')) {
+   $('#remind_details').show();
+  } else {
+   $('#remind_details').hide();
+  }
+ }
+ );
+
+
+  $('#advanced').click (function ()
+  {
+  var thisCheck = $(this);
+  if (thisCheck.is(':checked')) {
+   $('#advanced_detais').show();
+  } else {
+   $('#advanced_detais').hide();
+  }
+ }
+ );
+ 
+
+$(function () {
+$('#st_time').datetimepicker({format: 'DD.MM.YYYY HH:mm',locale: 'ru',defaultDate: '[#DUE#]', sideBySide: true});
+$('#st_time').on("dp.change", function (e) {
+var date1 = $('#st_time input').val();
+var date2 = moment(date1,'DD.MM.YYYY HH:mm').format('YYYY-MM-DD HH:mm:ss');
+//$('#reminder_time').data("DateTimePicker").date(date2);//due to reminder
+document.getElementById('due').value = date2;
+});
+});
+
+</script>

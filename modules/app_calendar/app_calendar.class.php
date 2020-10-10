@@ -137,13 +137,13 @@ function run() {
   $settings=array(
    array(
     'NAME'=>'APP_CALENDAR_SOONLIMIT', 
-    'TITLE'=>'Days to show in "soon" section', 
+    'TITLE'=>'Сколько дней показывать в "Скоро"', 
     'TYPE'=>'text',
     'DEFAULT'=>'14'
     ),
    array(
     'NAME'=>'APP_CALENDAR_SHOWDONE', 
-    'TITLE'=>'Show recently done items',
+    'TITLE'=>'Показывать недавно выполненные дела',
     'TYPE'=>'yesno',
     'DEFAULT'=>'1'
     ),
@@ -152,8 +152,13 @@ function run() {
     'TITLE'=>'Показывать календарь в Делах и Событиях',
     'TYPE'=>'yesno',
     'DEFAULT'=>'1'
+    ),
+   array(
+    'NAME'=>'APP_CALENDAR_REMINDERTIME', 
+    'TITLE'=>'Стандартное время напоминания', 
+    'TYPE'=>'text',
+    'DEFAULT'=>'10:15'
     )
-
 
    );
 
@@ -236,7 +241,7 @@ function admin(&$out) {
 */
 function usual(&$out) {
  if ($this->view_mode=='edit') {
-  $this->usual_edit($out);
+  $this->usual_edit($out,$id);
  }
 
  if ($this->view_mode=='') {
@@ -429,8 +434,8 @@ function usual(&$out) {
 *
 * @access public
 */
- function usual_edit(&$out) {
-
+ function usual_edit(&$out, $id) {
+  echo('usual_edit id='.$id.' title='.$title);
   global $title;
   global $id;
 
@@ -525,6 +530,13 @@ function usual(&$out) {
    $rec['REMIND_CODE'] = $remind_code;
    global $all_day;
    $rec['ALL_DAY'] = (int)$all_day;
+   global $week_days;
+   $rec['WEEK_DAYS'] = @implode(',', $week_days);
+   if (is_null($rec['WEEK_DAYS'])) {
+        $rec['WEEK_DAYS'] = '';
+    }
+   global $autodone;
+   $rec['AUTODONE'] = $autodone;
    ////////////////////////////////
 
    if ($ok) {
@@ -549,6 +561,22 @@ function usual(&$out) {
   //$out['LOCATIONS']=SQLSelect("SELECT * FROM gpslocations ORDER BY TITLE");
   $out['SCRIPTS']=SQLSelect("SELECT ID, TITLE FROM scripts ORDER BY TITLE");
   $out['CALENDAR_CATEGORIES']=SQLSelect("SELECT ID, TITLE from calendar_categories ORDER BY TITLE");
+
+$w_days = array();
+if ($rec['WEEK_DAYS']!=='') {
+  $w_days = explode(',', $rec['WEEK_DAYS']);
+}
+
+$days = array( 1=>"Пн","Вт","Ср","Чт","Пт","Сб","Вс");
+for ($i = 1; $i < 8; $i++) {
+    $out['WDAYS'][] = array(
+         'VALUE'    => $i,
+         'DNAME'    => $days[$i],
+         'SELECTED' => (in_array($i, $w_days))?1:0,
+   );
+    
+}
+
  }
 
 /**
@@ -562,9 +590,9 @@ function usual(&$out) {
 
  function task_done($id) {
   //DebMes("Task $id is DONE! Congratulations!!!");
-  $rec=SQLSelectOne("SELECT * FROM calendar_events WHERE ID='".(int)$id."'");
-  $rec['DONE_WHEN']=date('Y-m-d H:i:s');
-  $rec['IS_DONE']=1;
+  $rec = SQLSelectOne("SELECT * FROM calendar_events WHERE ID='".(int)$id."'");
+  $rec['DONE_WHEN'] = date('Y-m-d H:i:s');
+  $rec['IS_DONE'] = 1;
 
   //$tmp=explode('-', $rec['DUE']);
   //$due_time=mktime(1, 1, 1, $tmp[1], $tmp[2], $tmp[0]);
@@ -573,30 +601,51 @@ function usual(&$out) {
 
    $due_time = strtotime(date('Y-m-d H:i:00',strtotime($rec['DUE']))); //unixtime
    //от греха поставим сегодня для пусто
-   if($due_time)$due_time=time();
+   if(!$due_time) $due_time = time();
    $part_due = date_parse($rec['DUE']);
 
    $rec['IS_DONE']=0;
    if ($rec['REPEAT_TYPE']==1) {
     // yearly task
-    //$due_time_next_year=mktime(1, 1, 1, $tmp[1], $tmp[2], $tmp[0]+1);
-    $due_time_next_year=mktime($part_due['hour'],$part_due['minute'],0,$part_due['month'],$part_due['day'],$part_due['year']+1);
-    $rec['DUE']=date('Y-m-d  H:i:00', $due_time_next_year);
+   $due_time_next_year=mktime($part_due['hour'],$part_due['minute'],0,$part_due['month'],$part_due['day'],$part_due['year']+1);
+    $rec['DUE']=date('Y-m-d H:i:00', $due_time_next_year);
    } elseif ($rec['REPEAT_TYPE']==2) {
     // monthly task
     $time_next_month=$due_time+31*24*60*60;
     $due_time_next_month=mktime($part_due['hour'],$part_due['minute'],0, date('m', $time_next_month), $part_due['day'], date('Y', $time_next_month));
-    $rec['DUE'] = date('Y-m-d  H:i:00', $due_time_next_month);
+    $rec['DUE'] = date('Y-m-d H:i:00', $due_time_next_month);
    } elseif ($rec['REPEAT_TYPE']==3) {
-    // weekly task
-    $due_time_next_week=$due_time+7*24*60*60;
-    $rec['DUE']=date('Y-m-d  H:i:00', $due_time_next_week);
+     if(!$rec['WEEK_DAYS']){
+       // weekly task
+      $due_time_next_week=$due_time+7*24*60*60;
+      $rec['DUE']=date('Y-m-d H:i:00', $due_time_next_week);
+     }else{
+       $week_days = array();
+	   if ($rec['WEEK_DAYS']!=='') $week_days = explode(',', $rec['WEEK_DAYS']);
+       $dd = time();
+       $due = date("N", $dd); //переведём в формат пн=1...вс=7
+       for($i = 0; $i < 7;$i++){
+         $dd = $dd + 24*60*60; //след. дата
+         $due = $due + 1;
+         if($due > 7) $due = 1;
+         if(in_array($due, $week_days)) { //первый следующий запуск
+           //$next = $dd;
+           break;
+         }
+       }
+       $due_time_next_week= mktime($part_due['hour'],$part_due['minute'],0, date('m', $dd), date('j', $dd), date('Y', $dd));
+       $rec['DUE']=date('Y-m-d H:i:00', $due_time_next_week);
+   
+
+
+
+     }
    } elseif ($rec['REPEAT_TYPE']==9) {
     // custom repeat task
     if ($rec['IS_REPEATING_AFTER']) {
-     $rec['DUE']=date('Y-m-d  H:i:00', time()+$rec['REPEAT_IN']*24*60*60);
+     $rec['DUE']=date('Y-m-d H:i:00', time()+$rec['REPEAT_IN']*24*60*60);
     } else {
-     $rec['DUE']=date('Y-m-d  H:i:00', $due_time+$rec['REPEAT_IN']*24*60*60);
+     $rec['DUE']=date('Y-m-d H:i:00', $due_time+$rec['REPEAT_IN']*24*60*60);
     }
    }
   }

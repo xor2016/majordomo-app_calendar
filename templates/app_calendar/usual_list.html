@@ -7,7 +7,7 @@ input[type=checkbox] {height: 15px;width: 15px;vertical-align: bottom;margin-top
 </style>
 
 
-<form action="?" method="get">
+<form action="?" method="post">
 <table style="margin-top: 30px;" border="0" align="center">
  <tr>
   <td valign="top"><input type="text" name="title" size="40"  class="form-control"></td>
@@ -42,14 +42,17 @@ input[type=checkbox] {height: 15px;width: 15px;vertical-align: bottom;margin-top
 
 [#if ONLY_CALENDAR==0#]
 
-<h1 class="title" style="padding-top: 15px;"><img style="height: 39px;padding-bottom: 5px;" src="data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTkuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeD0iMHB4IiB5PSIwcHgiIHZpZXdCb3g9IjAgMCA1MDEuNTUxIDUwMS41NTEiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDUwMS41NTEgNTAxLjU1MTsiIHhtbDpzcGFjZT0icHJlc2VydmUiIHdpZHRoPSI1MTJweCIgaGVpZ2h0PSI1MTJweCI+CjxyZWN0IHg9IjM5LjcwNiIgeT0iNDguMDY1IiBzdHlsZT0iZmlsbDojQUNCM0JBOyIgd2lkdGg9IjUwLjE1NSIgaGVpZ2h0PSI0NTMuNDg2Ii8+CjxwYXRoIHN0eWxlPSJmaWxsOiNGRkQxNUM7IiBkPSJNNDc3LjUxOCw4OC44MTZ2MjgyLjEyMmMtMTI0LjM0My05MS45NTEtMjQ3LjY0MSw4MC40NTctMzcxLjk4NCwxMC40NDkgIGMtNS4yMjQtMy4xMzUtMTAuNDQ5LTYuMjY5LTE1LjY3My0xMC40NDlWODguODE2YzUuMjI0LDQuMTgsMTAuNDQ5LDcuMzE0LDE1LjY3MywxMC40NDkgIEMyMjkuODc4LDE3MC4zMTgsMzUzLjE3Ni0yLjA5LDQ3Ny41MTgsODguODE2eiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojOUFBOUI1OyIgZD0iTTg5Ljg2MSw0OC4wNjV2NDIuODQxYy03LjMxNCw0LjE4LTE1LjY3Myw2LjI2OS0yNS4wNzgsNi4yNjlzLTE3Ljc2My0yLjA5LTI1LjA3OC02LjI2OVY0OC4wNjUgIEg4OS44NjF6Ii8+CjxjaXJjbGUgc3R5bGU9ImZpbGw6I0ZGNzA1ODsiIGN4PSI2NC43ODQiIGN5PSI0MC43NTEiIHI9IjQwLjc1MSIvPgo8cGF0aCBzdHlsZT0iZmlsbDojRjhCNjRDOyIgZD0iTTEwNS41MzUsOTkuMjY1djI4Mi4xMjJjLTUuMjI0LTMuMTM1LTEwLjQ0OS02LjI2OS0xNS42NzMtMTAuNDQ5Vjg4LjgxNiAgQzk1LjA4Niw5Mi45OTYsMTAwLjMxLDk2LjEzMSwxMDUuNTM1LDk5LjI2NXoiLz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPC9zdmc+Cg==" /> <#LANG_TODAY#></h1>
+<h1 class="title" style="padding-top: 15px; color: green;"><img style="height: 39px;padding-bottom: 5px;" src="../cms/calendar/icon-notesdate.png" /> <#LANG_TODAY#></h1>
 <table class="paddingleft" border="0">
  [#if EVENTS_TODAY#]
  [#begin EVENTS_TODAY#]
  <tr>
-  <td valign="top">[#if IS_TASK="1"#]<img style="height: 25px;" src="../cms/calendar/task.svg" title="Задача" alt="Задача">[#else#]<img style="height: 25px;" src="../cms/calendar/notification.svg" title="Событие" alt="Событие">[#endif#]</td>
-  <td>[#if ICON!=""#]<img style="width: 25px;" src="<#ROOTHTML#>cms/calendar/[#ICON#]">[#endif ICON#]</td>
-  <td id="yestask" width="100%"><span id="task_title[#ID#]">[#if due_time!="00:00"#]([#due_time#]) [#endif#][#TITLE#]</span> <div class="menu"><a href="?view_mode=edit&id=[#ID#]"><img style="height: 15px;" src="../cms/calendar/settings.svg" /></a>[#if IS_TASK="1"#] | <input type="checkbox" name="task[#ID#]" class="tasks" value="[#ID#]" data-role="none">[#endif#]</div> [#if NOTES=""#][#else#]<span style="color: grey; font-style: italic;"> — [#NOTES#]</span>[#endif#]</td>
+  <td>[#if ICON!=""#]<img style="width: 15px;" src="<#ROOTHTML#>cms/calendar/[#ICON#]">[#endif ICON#]</td>
+  <td valign="top">[#if IS_TASK="1"#]<img style="height: 30px;" src="../cms/calendar/task.png" title="Задача" alt="Задача">[#else#]<img style="height: 30px;" src="../cms/calendar/notification.png" title="Событие" alt="Событие">[#endif#]</td>
+
+  <td>[#if IS_REMIND="1"#]<img style="width: 15px;" src="../cms/calendar/bellalt.png">[#endif IS_REMIND#]</td>
+  <td>[#if AUTODONE="1"#]<img style="width: 15px;" src="../cms/calendar/android.png">[#endif AUTODONE#]</td>
+  <td id="yestask" width="100%"><span id="task_title[#ID#]">[#if IS_NODATE="0"#][#if ALL_DAY="0"#] ([#due_time#]) [#endif#][#endif#][#TITLE#]</span> <div class="menu"><a href="?view_mode=edit&id=[#ID#]"><img style="height: 15px;" src="../cms/calendar/settings.png" /></a>[#if IS_TASK="1"#] | <input type="checkbox" name="task[#ID#]" class="tasks" value="[#ID#]" data-role="none">[#endif#]</div> [#if NOTES=""#][#else#]<span style="color: grey; font-style: italic;"> — [#NOTES#]</span>[#endif#]</td>
   <!--td><a style="font-size: 13px;" href="?view_mode=edit&id=[#ID#]"><#LANG_EDIT#></a></td-->
  </tr>
  [#end EVENTS_TODAY#]
@@ -62,15 +65,15 @@ input[type=checkbox] {height: 15px;width: 15px;vertical-align: bottom;margin-top
 
 [#begin CALENDAR_CATEGORIES#]
 [#if REC_COUNT>0#]
-<h1 class="title" style="padding-top: 15px;">[#if ICON!=""#]<img style="width: 40px;" src="<#ROOTHTML#>cms/calendar/[#ICON#]">[#else#]<img style="width: 40px;" src="<#ROOTHTML#>cms/calendar/default.gif">[#endif ICON#][#TITLE#]</h1>
+<h1 class="title" style="padding-top: 15px;">[#if ICON!=""#]<img style="width: 40px;" src="<#ROOTHTML#>cms/calendar/[#ICON#]">[#else#]<img style="width: 40px;" src="<#ROOTHTML#>cms/calendar/default.png">[#endif ICON#][#TITLE#]</h1>
 <table border="0">
 [#if EVENTS_PAST#]
 <h2 style="color: #ff0000; font-size: 18px;margin-top: 5px;"><#LANG_PAST_DUE#></h2>
 <table class="paddingleft" border="0" style="margin-bottom: 15px;">
  [#begin EVENTS_PAST#]
  <tr>
-  <td valign="top">[#if IS_TASK="1"#]<img style="height: 25px;" src="../cms/calendar/task.svg" title="Задача" alt="Задача">[#else#]<img style="height: 25px;" src="../cms/calendar/notification.svg" title="Событие" alt="Событие">[#endif#]</td>
-  <td id="yestask" width="100%"><span id="task_title[#ID#]">[#TITLE#] (прошло [#AGE#] [#DAYS#])</span> <div class="menu"><a href="?view_mode=edit&id=[#ID#]"><img style="height: 15px;" src="../cms/calendar/settings.svg" /></a>[#if IS_TASK="1"#] | <input type="checkbox" name="task[#ID#]" class="tasks" value="[#ID#]" data-role="none">[#endif#]</div> [#if NOTES=""#][#else#]<span style="color: grey; font-style: italic;"> — [#NOTES#]</span>[#endif#]</td>
+  <td valign="top">[#if IS_TASK="1"#]<img style="height: 25px;" src="../cms/calendar/task.png" title="Задача" alt="Задача">[#else#]<img style="height: 25px;" src="../cms/calendar/notification.png" title="Событие" alt="Событие">[#endif#]</td>
+  <td id="yestask" width="100%"><span id="task_title[#ID#]">[#TITLE#] (прошло [#AGE#] [#DAYS#])</span> <div class="menu"><a href="?view_mode=edit&id=[#ID#]"><img style="height: 15px;" src="../cms/calendar/settings.png" /></a>[#if IS_TASK="1"#] | <input type="checkbox" name="task[#ID#]" class="tasks" value="[#ID#]" data-role="none">[#endif#]</div> [#if NOTES=""#][#else#]<span style="color: grey; font-style: italic;"> — [#NOTES#]</span>[#endif#]</td>
   <!--td><a style="font-size: 13px;" href="?view_mode=edit&id=[#ID#]"><#LANG_EDIT#></a></td-->
  </tr>
  [#end EVENTS_PAST#]
@@ -84,8 +87,8 @@ input[type=checkbox] {height: 15px;width: 15px;vertical-align: bottom;margin-top
 <table class="paddingleft" border="0" style="margin-bottom: 15px;">
  [#begin EVENTS_SOON#]
  <tr>
-  <td valign="top">[#if IS_TASK="1"#]<img style="height: 25px;" src="../cms/calendar/task.svg" title="Задача" alt="Задача">[#else#]<img style="height: 25px;" src="../cms/calendar/notification.svg" title="Событие" alt="Событие">[#endif#]</td>
-  <td id="yestask" width="100%"><span id="task_title[#ID#]">[#TITLE#] ([#DAYS#])</span> <div class="menu"><a href="?view_mode=edit&id=[#ID#]"><img style="height: 15px;" src="../cms/calendar/settings.svg" /></a>[#if IS_TASK="1"#] | <input type="checkbox" name="task[#ID#]" class="tasks" value="[#ID#]" data-role="none">[#endif#]</div> [#if NOTES=""#][#else#]<span style="color: grey; font-style: italic;"> — [#NOTES#]</span>[#endif#]</td>
+  <td valign="top">[#if IS_TASK="1"#]<img style="height: 25px;" src="../cms/calendar/task.png" title="Задача" alt="Задача">[#else#]<img style="height: 25px;" src="../cms/calendar/notification.png" title="Событие" alt="Событие">[#endif#]</td>
+  <td id="yestask" width="100%"><span id="task_title[#ID#]">[#TITLE#] ([#DAYS#])</span> <div class="menu"><a href="?view_mode=edit&id=[#ID#]"><img style="height: 15px;" src="../cms/calendar/settings.png" /></a>[#if IS_TASK="1"#] | <input type="checkbox" name="task[#ID#]" class="tasks" value="[#ID#]" data-role="none">[#endif#]</div> [#if NOTES=""#][#else#]<span style="color: grey; font-style: italic;"> — [#NOTES#]</span>[#endif#]</td>
   <!--td><a style="font-size: 13px;" href="?view_mode=edit&id=[#ID#]"><#LANG_EDIT#></a></td--> 
  </tr>
  [#end EVENTS_SOON#]
@@ -97,12 +100,12 @@ input[type=checkbox] {height: 15px;width: 15px;vertical-align: bottom;margin-top
 [#end CALENDAR_CATEGORIES#]
 
 [#if RECENTLY_DONE#]
-<h1 class="title" style="color: green; padding-top: 15px;"><img style="height: 39px;padding-bottom: 5px;" src="data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTkuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeD0iMHB4IiB5PSIwcHgiIHZpZXdCb3g9IjAgMCA1MDcuMiA1MDcuMiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNTA3LjIgNTA3LjI7IiB4bWw6c3BhY2U9InByZXNlcnZlIiB3aWR0aD0iNTEycHgiIGhlaWdodD0iNTEycHgiPgo8Y2lyY2xlIHN0eWxlPSJmaWxsOiMzMkJBN0M7IiBjeD0iMjUzLjYiIGN5PSIyNTMuNiIgcj0iMjUzLjYiLz4KPHBhdGggc3R5bGU9ImZpbGw6IzBBQTA2RTsiIGQ9Ik0xODguOCwzNjhsMTMwLjQsMTMwLjRjMTA4LTI4LjgsMTg4LTEyNy4yLDE4OC0yNDQuOGMwLTIuNCwwLTQuOCwwLTcuMkw0MDQuOCwxNTJMMTg4LjgsMzY4eiIvPgo8Zz4KCTxwYXRoIHN0eWxlPSJmaWxsOiNGRkZGRkY7IiBkPSJNMjYwLDMxMC40YzExLjIsMTEuMiwxMS4yLDMwLjQsMCw0MS42bC0yMy4yLDIzLjJjLTExLjIsMTEuMi0zMC40LDExLjItNDEuNiwwTDkzLjYsMjcyLjggICBjLTExLjItMTEuMi0xMS4yLTMwLjQsMC00MS42bDIzLjItMjMuMmMxMS4yLTExLjIsMzAuNC0xMS4yLDQxLjYsMEwyNjAsMzEwLjR6Ii8+Cgk8cGF0aCBzdHlsZT0iZmlsbDojRkZGRkZGOyIgZD0iTTM0OC44LDEzMy42YzExLjItMTEuMiwzMC40LTExLjIsNDEuNiwwbDIzLjIsMjMuMmMxMS4yLDExLjIsMTEuMiwzMC40LDAsNDEuNmwtMTc2LDE3NS4yICAgYy0xMS4yLDExLjItMzAuNCwxMS4yLTQxLjYsMGwtMjMuMi0yMy4yYy0xMS4yLTExLjItMTEuMi0zMC40LDAtNDEuNkwzNDguOCwxMzMuNnoiLz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8L3N2Zz4K" /> <#LANG_DONE_RECENTLY#></h1>
+<h1 class="title" style="color: green; padding-top: 15px;"><img style="height: 39px;padding-bottom: 5px;" src="../cms/calendar/icon-ok.png" /> <#LANG_DONE_RECENTLY#></h1>
 <table class="paddingleft" border="0">
  [#begin RECENTLY_DONE#]
  <tr>
-  <td valign="top">[#if IS_TASK="1"#]<img style="height: 25px;" src="../cms/calendar/task.svg" title="Задача" alt="Задача">[#else#]<img style="height: 25px;" src="../cms/calendar/notification.svg" title="Событие" alt="Событие">[#endif#]</td>
-  <td id="yestask" width="100%"><span style="text-decoration:line-through" id="task_title[#ID#]">[#TITLE#]</span> <div class="menu"><a href="?view_mode=edit&id=[#ID#]"><img style="height: 15px;" src="../cms/calendar/settings.svg" /></a></div> [#if NOTES=""#][#else#]<span style="color: grey; font-style: italic;"> — <span style="text-decoration:line-through;">[#NOTES#]</span></span>[#endif#]</td>
+  <td valign="top">[#if IS_TASK="1"#]<img style="height: 25px;" src="../cms/calendar/task.png" title="Задача" alt="Задача">[#else#]<img style="height: 25px;" src="../cms/calendar/notification.png" title="Событие" alt="Событие">[#endif#]</td>
+  <td id="yestask" width="100%"><span style="text-decoration:line-through" id="task_title[#ID#]">[#TITLE#]</span> <div class="menu"><a href="?view_mode=edit&id=[#ID#]"><img style="height: 15px;" src="../cms/calendar/settings.png" /></a></div> [#if NOTES=""#][#else#]<span style="color: grey; font-style: italic;"> — <span style="text-decoration:line-through;">[#NOTES#]</span></span>[#endif#]</td>
   <!--td><a style="font-size: 13px;" href="?view_mode=edit&id=[#ID#]"><#LANG_EDIT#></a></td-->
  </tr>
  [#end RECENTLY_DONE#]
