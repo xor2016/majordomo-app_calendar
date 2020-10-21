@@ -18,7 +18,7 @@ else
  $mon_filt='';
 
 
-$cat_days=SQLSelect("select calendar_events.*,day(DUE) as DAY,month(DUE) as MON,calendar_categories.CALENDAR_COLOR from calendar_events inner join calendar_categories on calendar_events.calendar_category_id=calendar_categories.id where " . $mon_filt . "calendar_categories.AT_CALENDAR=1 and  (year(DUE)=" . $year . " or (IS_REPEATING=1 and REPEAT_TYPE=1))");
+$cat_days=SQLSelect("select calendar_events.*,day(DUE) as DAY,month(DUE) as MON,calendar_categories.CALENDAR_COLOR from calendar_events inner join calendar_categories on calendar_events.calendar_category_id=calendar_categories.id where " . $mon_filt . "calendar_categories.AT_CALENDAR=1 and  (year(DUE)=" . $year . " or (IS_REPEATING=1 and REPEAT_TYPE=1)) and is_nodate=0"); //lsv added is_nodate 20201016
 
 $arHolidays=SQLSelect("select calendar_events.ID,day(DUE) as DAY,month(DUE) as MONTH, calendar_events.TITLE as HD_NAME from calendar_events inner join calendar_categories on calendar_events.calendar_category_id=calendar_categories.id where " . $mon_filt . "calendar_categories.HOLIDAYS=1 and  year(DUE)=" . $year );
 
