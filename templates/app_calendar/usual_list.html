@@ -41,11 +41,11 @@ input[type=checkbox] {height: 15px;width: 15px;vertical-align: bottom;margin-top
 
 
 [#if ONLY_CALENDAR==0#]
- [#if EVENTS_NODATE#]
-<h1 class="title" id="h1_events_nodate" style="padding-top: 15px; color: green;"><img style="height: 39px;padding-bottom: 5px;" src="../cms/calendar/default.png" onClick="toggle_show('events_nodate_block')"/> Без даты ({#EVENTS_NODATE_REC_COUNT#})</h1>
-<div  id="events_nodate_block" style="display:none;"> 
-<table class="paddingleft" border="0">
 
+<h1 class="title" id="h1_events_nodate" style="padding-top: 15px; color: green;"><img style="height: 39px;padding-bottom: 5px;" src="../cms/calendar/default.png" onClick="toggle_show('events_nodate_block')"/> Без даты  ({#EVENTS_NODATE_REC_COUNT#})</h1>
+<div  id="events_nodate_block" [#if EVENTS_NODATE_REC_COUNT > 5#]style="display:none;"[#endif EVENTS_NODATE_REC_COUNT#]> 
+<table class="paddingleft" border="0">
+[#if EVENTS_NODATE#]
  [#begin EVENTS_NODATE#]
  <tr>
   <td>[#if ICON!=""#]<img style="width: 15px;" src="<#ROOTHTML#>cms/calendar/[#ICON#]">[#endif ICON#]</td>
@@ -61,8 +61,8 @@ input[type=checkbox] {height: 15px;width: 15px;vertical-align: bottom;margin-top
 </table>
 </div>
 
-<h1 class="title" style="padding-top: 15px; color: green;"><img style="height: 39px;padding-bottom: 5px;" src="../cms/calendar/icon-notesdate.png" onClick="toggle_show('events_today_block')"/> <#LANG_TODAY#> [#if EVENTS_TODAY#]({#EVENTS_TODAY_REC_COUNT#})[#else#] нет[#endif#]</h1>
-<div  id="events_today_block"  style="display:block;"> 
+<h1 class="title" style="padding-top: 15px; color: green;"><img style="height: 39px;padding-bottom: 5px;" src="../cms/calendar/icon-notesdate.png" onClick="toggle_show('events_today_block')"/> <#LANG_TODAY#>  [#if EVENTS_TODAY#]({#EVENTS_TODAY_REC_COUNT#})[#else#] нет[#endif#]</h1>
+<div  id="events_today_block"  [#if EVENTS_TODAY_REC_COUNT > 5#]style="display:none;"[#endif EVENTS_TODAY_REC_COUNT#]> 
 <table class="paddingleft" border="0">
  [#if EVENTS_TODAY#]
  [#begin EVENTS_TODAY#]
@@ -85,8 +85,8 @@ input[type=checkbox] {height: 15px;width: 15px;vertical-align: bottom;margin-top
 </table>
 </div>
 
-<h1 class="title" style="padding-top: 15px; color: green;"><img style="height: 39px;padding-bottom: 5px;" src="../cms/calendar/icon-notesdate.png" onClick="toggle_show('events_tomorrow_block')"/> Завтра [#if EVENTS_TOMORROW#]({#EVENTS_TOMORROW_REC_COUNT#})[#else#] нет[#endif#]</h1>
-<div  id="events_tomorrow_block"  style="display:none"> 
+<h1 class="title" style="padding-top: 15px; color: green;"><img style="height: 39px;padding-bottom: 5px;" src="../cms/calendar/icon-notesdate.png" onClick="toggle_show('events_tomorrow_block')"/> Завтра  [#if EVENTS_TOMORROW#]({#EVENTS_TOMORROW_REC_COUNT#})[#else#] нет[#endif#]</h1>
+<div  id="events_tomorrow_block" [#if EVENTS_TOMORROW_REC_COUNT > 5#]style="display:none;"[#endif EVENTS_TOMORROW_REC_COUNT#]> 
 <table class="paddingleft" border="0">
  [#if EVENTS_TOMORROW#]
  [#begin EVENTS_TOMORROW#]
@@ -106,8 +106,8 @@ input[type=checkbox] {height: 15px;width: 15px;vertical-align: bottom;margin-top
 </div>
 
 [#if EVENTS_AFTER#]
-<h1 class="title" style="padding-top: 15px; color: green;"><img style="height: 39px;padding-bottom: 5px;" src="../cms/calendar/icon-notesdate.png" onClick="toggle_show('events_after_block')"/> Позже ({#EVENTS_AFTER_REC_COUNT#})</h1>
-<div  id="events_after_block"  style="display:none"> 
+<h1 class="title" style="padding-top: 15px; color: green;"><img style="height: 39px;padding-bottom: 5px;" src="../cms/calendar/icon-notesdate.png" onClick="toggle_show('events_after_block')"/> Ближайшие  ({#EVENTS_AFTER_REC_COUNT#})</h1>
+<div  id="events_after_block"  [#if EVENTS_AFTER_REC_COUNT > 5#]style="display:none;"[#endif EVENTS_AFTER_REC_COUNT#]> 
 <table class="paddingleft" border="0">
 
  [#begin EVENTS_AFTER#]
@@ -127,8 +127,8 @@ input[type=checkbox] {height: 15px;width: 15px;vertical-align: bottom;margin-top
 </div>
 
 [#if EVENTS_OVERDUE#]
-<h1 class="title" style="padding-top: 15px; color: green;"><img style="height: 39px;padding-bottom: 5px;" src="../cms/calendar/icon-notesdate.png" onClick="toggle_show('events_overdue_block')"/> Просрочено ({#EVENTS_OVERDUE_REC_COUNT#})</h1>
-<div  id="events_overdue_block"  style="display:none"> 
+<h1 class="title" style="padding-top: 15px; color: red;"><img style="height: 39px;padding-bottom: 5px;" src="../cms/calendar/icon-notesdate.png" onClick="toggle_show('events_overdue_block')"/> Просрочено  ({#EVENTS_OVERDUE_REC_COUNT#})</h1>
+<div  id="events_overdue_block"  [#if EVENTS_OVERDUE_REC_COUNT > 2#]style="display:none;"[#endif EVENTS_OVERDUE_REC_COUNT#]> 
 <table class="paddingleft" border="0">
 
  [#begin EVENTS_OVERDUE#]
@@ -149,8 +149,8 @@ input[type=checkbox] {height: 15px;width: 15px;vertical-align: bottom;margin-top
 
 
 [#if RECENTLY_DONE#]
-<h1 class="title" style="color: green; padding-top: 15px;"><img style="height: 39px;padding-bottom: 5px;" src="../cms/calendar/icon-ok.png" onClick="toggle_show('recently_done_block')"/> <#LANG_DONE_RECENTLY#> [#if RECENTLY_DONE#]({#RECENTLY_DONE_REC_COUNT#})[#else#] нет[#endif#]</h1>
-<div id='recently_done_block'  style="display:none">
+<h1 class="title" style="color: green; padding-top: 15px;"><img style="height: 39px;padding-bottom: 5px;" src="../cms/calendar/icon-ok.png" onClick="toggle_show('recently_done_block')"/> <#LANG_DONE_RECENTLY#>  ({#RECENTLY_DONE_REC_COUNT#})</h1>
+<div id='recently_done_block'  [#if RECENTLY_DONE_REC_COUNT > 3#]style="display:none;"[#endif RECENTLY_DONE_REC_COUNT#]>
 <table class="paddingleft" border="0">
  [#begin RECENTLY_DONE#]
  <tr>
