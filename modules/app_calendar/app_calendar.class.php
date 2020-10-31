@@ -298,7 +298,7 @@ function usual(&$out) {
    $out['ONLY_CALENDAR']=1;
   else
  {
-
+/*
   $events_today_temp = SQLSelect("SELECT  DATE_FORMAT( calendar_events.due, '%H:%i' ) due_time,calendar_events.*,calendar_categories.ICON FROM calendar_events left join calendar_categories on calendar_events.calendar_category_id=calendar_categories.id WHERE ( TO_DAYS(DUE)<=TO_DAYS(NOW()) and TO_DAYS(END_TIME)>=TO_DAYS(NOW()) and IS_NODATE=0) AND IS_TASK=0  ORDER by DUE");
   if ($events_today_temp) {
    foreach($events_today_temp as $k=>$v) {
@@ -306,8 +306,8 @@ function usual(&$out) {
     //$calendar_categories[$k1]['EVENTS_TODAY'][]=$v;
    }
   }
-
-  $tasks_today = SQLSelect("SELECT  DATE_FORMAT( calendar_events.due, '%H:%i' ) due_time,calendar_events.*,calendar_categories.ICON FROM calendar_events left join calendar_categories on calendar_events.calendar_category_id=calendar_categories.id  WHERE ( TO_DAYS(DUE)<=TO_DAYS(NOW()) and TO_DAYS(END_TIME)>=TO_DAYS(NOW()) and IS_NODATE=0) AND IS_DONE=0 AND IS_TASK=1  ORDER BY DUE");
+*/
+  $tasks_today = SQLSelect("SELECT  DATE_FORMAT( calendar_events.due, '%H:%i' ) due_time,calendar_events.*,calendar_categories.ICON FROM calendar_events left join calendar_categories on calendar_events.calendar_category_id=calendar_categories.id  WHERE TO_DAYS(DUE)<=TO_DAYS(NOW()) and END_TIME>=NOW() and IS_NODATE=0 AND IS_DONE=0  ORDER BY DUE");
   if ($tasks_today) {
    foreach($tasks_today as $k=>$v) {
     $events_today[]=$v;
@@ -316,7 +316,7 @@ function usual(&$out) {
   }
 
 //lsv added 20201017
-  $tasks_nodate = SQLSelect("SELECT  DATE_FORMAT( calendar_events.due, '%H:%i' ) due_time,calendar_events.*,calendar_categories.ICON FROM calendar_events left join calendar_categories on calendar_events.calendar_category_id=calendar_categories.id  WHERE  IS_NODATE=1 AND IS_DONE=0  ORDER BY calendar_events.title");
+  $tasks_nodate = SQLSelect("SELECT  DATE_FORMAT( calendar_events.due, '%H:%i' ) due_time,calendar_events.*,calendar_categories.ICON,(select count(d.ID) FROM calendar_events d where d.parent_id=calendar_events.id) IS_MAIN FROM calendar_events calendar_events left join calendar_categories on calendar_events.calendar_category_id=calendar_categories.id  WHERE  IS_NODATE=1 AND IS_DONE=0  ORDER BY IS_MAIN desc");
   if ($tasks_nodate) {
    foreach($tasks_nodate as $k=>$v) {
     $events_nodate[]=$v;
@@ -340,6 +340,7 @@ function usual(&$out) {
    $out['EVENTS_TOMORROW_REC_COUNT'] = count($events_tomorrow);
   }
 ///////////////
+
   $events_early_today=SQLSelect("SELECT  DATE_FORMAT( calendar_events.due, '%H:%i' ) due_time,calendar_events.*,calendar_categories.ICON FROM calendar_events left join calendar_categories on calendar_events.calendar_category_id=calendar_categories.id  WHERE TO_DAYS(DATE(CONCAT_WS('-', DATE_FORMAT(NOW(), '%Y'), DATE_FORMAT(DUE, '%m'), DATE_FORMAT(DUE, '%d'))))=TO_DAYS(NOW()) AND IS_REPEATING=1 AND REPEAT_TYPE=1 AND IS_TASK=0 ORDER BY DUE");
   if ($events_early_today) {
    foreach($events_early_today as $k=>$v) {
@@ -373,7 +374,7 @@ function usual(&$out) {
 if (SETTINGS_APP_CALENDAR_SOONLIMIT) {
   $soon_limit = SETTINGS_APP_CALENDAR_SOONLIMIT;
 }else{
-  $soon_limit = 7;
+  $soon_limit = 6;
 }
   $tasks_after = SQLSelect("SELECT DATE_FORMAT( calendar_events.due, '%d.%m.%y %H:%i' ) due_time, DATE_FORMAT( calendar_events.due, '%d.%m.%y' ) due_date,calendar_events.*,calendar_categories.ICON FROM calendar_events left join calendar_categories on calendar_events.calendar_category_id=calendar_categories.id  WHERE  TO_DAYS(DUE)>=TO_DAYS(NOW())+2 and TO_DAYS(END_TIME)>=TO_DAYS(NOW())+2 and IS_NODATE=0 AND IS_DONE=0 and TO_DAYS(DUE)<=TO_DAYS(NOW())+ $soon_limit ORDER BY DUE");
   if ($tasks_after) {
@@ -388,7 +389,7 @@ if (SETTINGS_APP_CALENDAR_SOONLIMIT) {
   }
 
 //просроченная задача
-  $tasks_overdue = SQLSelect("SELECT DATE_FORMAT( calendar_events.due, '%d.%m.%y' ) due_time,calendar_events.*,calendar_categories.ICON FROM calendar_events left join calendar_categories on calendar_events.calendar_category_id=calendar_categories.id  WHERE DUE < NOW() AND END_TIME< NOW() AND IS_DONE=0 AND IS_NODATE=0 AND IS_TASK=1 ORDER BY DUE");
+  $tasks_overdue = SQLSelect("SELECT DATE_FORMAT( calendar_events.due, '%d.%m.%y %H:%i' ) due_time,calendar_events.*,calendar_categories.ICON FROM calendar_events left join calendar_categories on calendar_events.calendar_category_id=calendar_categories.id  WHERE DUE < NOW() AND END_TIME< NOW() AND IS_DONE=0 AND IS_NODATE=0 AND IS_TASK=1 ORDER BY DUE");
   if ($tasks_overdue) {
    foreach($tasks_overdue as $k=>$v) {
     $events_overdue[]=$v;
@@ -445,13 +446,6 @@ if (SETTINGS_APP_CALENDAR_SOONLIMIT) {
    $out['ALL_DAY'] = 0;
    $out['IS_REPEATING'] = 0;
 
-   if ($out['TITLE']) {
-    $others = SQLSelect("SELECT ID, TITLE, IS_DONE FROM calendar_events WHERE TITLE LIKE '%".DBSafe($out['TITLE'])."%' ORDER BY ID DESC");
-
-    if ($others) {
-     $out['OTHERS']=$others;
-    }
-   }
   }
 
   if ($this->mode=='update') {
@@ -475,6 +469,7 @@ if (SETTINGS_APP_CALENDAR_SOONLIMIT) {
    if (!$rec['DUE'] ) {
     $rec['DUE']=date('Y-m-d H:i'.':00');
    }
+
    global $end_time; //конец события
    $rec['END_TIME'] = $end_time;
    if (!$rec['END_TIME']) {
@@ -499,18 +494,18 @@ if (SETTINGS_APP_CALENDAR_SOONLIMIT) {
    }
    $rec['IS_DONE']=(int)$is_done;
 
-   global $all_day; //на весь день - с 00:00 до 23:59
-   $rec['ALL_DAY'] = (int)$all_day;
-   if($all_day){
-     $rec['DUE'] = date('Y-m-d',strtotime($rec['DUE'])).' 00:00:00';
-     $rec['END_TIME'] = date('Y-m-d',strtotime($rec['END_TIME'])).' 23:59:00';
-   }
-
    global $is_nodate; //сложно - без указания даты - всегда - спец. обработка(
    $rec['IS_NODATE']=(int)$is_nodate;
    if ($is_nodate) {
     $rec['IS_REPEATING']=0; //ignore sets
     $rec['ALL_DAY']=0;      
+   }
+
+   global $all_day; //на весь день - с 00:00 до 23:59
+   $rec['ALL_DAY'] = (int)$all_day;
+   if($all_day){
+     $rec['DUE'] = date('Y-m-d',strtotime($rec['DUE'])).' 00:00:00';
+     $rec['END_TIME'] = date('Y-m-d',strtotime($rec['END_TIME'])).' 23:59:00';
    }
 
    global $user_id;
@@ -570,8 +565,10 @@ if (SETTINGS_APP_CALENDAR_SOONLIMIT) {
      $rec['REMIND_TIME'] = date('Y-m-d H:i'.':00',$remd);
 
    }
+   global $parent_id;
+   $rec['PARENT_ID'] = $parent_id;
    ////////////////////////////////
-
+}
    if ($ok) {
     if ($rec['ID']) {
      SQLUpdate('calendar_events', $rec);
@@ -587,20 +584,15 @@ if (SETTINGS_APP_CALENDAR_SOONLIMIT) {
    }
 
 
-  }
-  if ($out['ID']) {
-    $others = SQLSelect("SELECT ID, TITLE, IS_DONE FROM calendar_events WHERE PARENT_ID=".DBSafe($out['ID'])." ORDER BY DUE");
+  //}
 
-    if ($others) {
-     $out['OTHERS']=$others;
-    }
-   }
+
   outHash($rec, $out);
   $out['DONE_WHEN'] = date('d.m.Y H:i:00',strtotime($rec['DONE_WHEN']));
-  $out['USERS']=SQLSelect("SELECT * FROM users ORDER BY NAME");
+  $out['USERS'] = SQLSelect("SELECT * FROM users ORDER BY NAME");
   //$out['LOCATIONS']=SQLSelect("SELECT * FROM gpslocations ORDER BY TITLE");
-  $out['SCRIPTS']=SQLSelect("SELECT ID, TITLE FROM scripts ORDER BY TITLE");
-  $out['CALENDAR_CATEGORIES']=SQLSelect("SELECT ID, TITLE from calendar_categories ORDER BY TITLE");
+  $out['SCRIPTS'] = SQLSelect("SELECT ID, TITLE FROM scripts ORDER BY TITLE");
+  $out['CALENDAR_CATEGORIES'] = SQLSelect("SELECT ID, TITLE from calendar_categories ORDER BY TITLE");
 //обработка дней недели
 $w_days = array();
 if ($rec['WEEK_DAYS']!=='') {
@@ -616,7 +608,21 @@ $days = array( 1=>"Пн","Вт","Ср","Чт","Пт","Сб","Вс");
 	   );
 	    
 	}
+  if ($out['ID']) {
+    //подчиненные задачи c overdue
+    $out['OTHERS'] = SQLSelect("SELECT ID, TITLE, IS_DONE, case when DUE < NOW() AND END_TIME< NOW() AND IS_DONE=0 AND IS_NODATE=0 AND IS_TASK=1 then 'red' else 'green' end  OVERDUE FROM calendar_events WHERE PARENT_ID=".$out['ID']." ORDER BY TITLE");
+    $out['OTHERS_REC_COUNT'] = count($out['OTHERS']);
+    //progress main
+    if($out['OTHERS_REC_COUNT']>0) {
+      $rec = SQLSelectOne( "SELECT sum(IS_DONE)*100/count(ID) PR FROM calendar_events WHERE PARENT_ID=".$out['ID']);
+      $out['PROGRESS'] = round($rec['PR']);
+    }else{
+      $out['PROGRESS'] = 0;
+    }
+    $out['FOR_LINKED_TASKS'] = SQLSelect("SELECT calendar_events.`ID`, calendar_events.`TITLE`,calendar_events.`DUE`,calendar_events.`PARENT_ID` ,calendar_categories.ICON FROM calendar_events left join calendar_categories on calendar_events.calendar_category_id=calendar_categories.id WHERE `IS_TASK`=1 and (`IS_DONE`=0 or `IS_REPEATING`=1) order by `TITLE`");
 
+    
+  }
 }
 
 
@@ -630,12 +636,11 @@ $days = array( 1=>"Пн","Вт","Ср","Чт","Пт","Сб","Вс");
 */
 
 
- function task_done($id) {
+ function task_done($id, $autoend = 0) {
   //DebMes("Task $id is DONE! Congratulations!!!");
   $rec = SQLSelectOne("SELECT * FROM calendar_events WHERE ID='".(int)$id."'");
-  //$task = $rec['IS_TASK']?1:0;
-    $rec['DONE_WHEN'] = date('Y-m-d H:i:s');
-    $rec['IS_DONE'] = 1;
+    if(!$autoend) {$rec['DONE_WHEN'] = date('Y-m-d H:i:s');}else{$rec['DONE_WHEN'] = null;}
+    if(!$autoend) {$rec['IS_DONE'] = 1;}else{$rec['IS_DONE'] = 0;}
 
   if ($rec['IS_REPEATING']) {
   
@@ -744,13 +749,24 @@ $days = array( 1=>"Пн","Вт","Ср","Чт","Пт","Сб","Вс");
 
 
   SQLUpdate('calendar_events', $rec);
+	  if(!$autoend){//без запусков кода при истечении срока повторяющейся задачи
+		  if ($rec['DONE_SCRIPT_ID']) {
+		   runScriptSafe($rec['DONE_SCRIPT_ID'], $rec);
+		  }elseif($rec['DONE_CODE']){
 
-  if ($rec['DONE_SCRIPT_ID']) {
-   runScriptSafe($rec['DONE_SCRIPT_ID'], $rec);
-  }
-  //todo run done_code
+			                        try {
+			                            $code = $rec['DONE_CODE'];
+			                            $success = eval($code);
+			                            if ($success === false)
+			                                DebMes("Error in Calendar Done code: " . $code);
+			                        } catch (Exception $e) {
+			                            DebMes('Error: exception ' . get_class($e) . ', ' . $e->getMessage() . '.');
+			                        }
+
+		  }
+	 }
  }
-//
+
 
  function process_remind($id) {
   $rec = SQLSelectOne("SELECT * FROM calendar_events WHERE ID='".(int)$id."'");
@@ -761,6 +777,16 @@ $days = array( 1=>"Пн","Вт","Ср","Чт","Пт","Сб","Вс");
 	    say("Напоминаю о событии " .$rec['TITLE'],2);
 	  }else{
 	  //todo $rec['REMIND_CODE']
+		if ($rec['REMIND_CODE']){
+			                        try {
+			                            $code = $rec['REMIND_CODE'];
+			                            $success = eval($code);
+			                            if ($success === false)
+			                                DebMes("Error in Calendar Reminder code: " . $code);
+			                        } catch (Exception $e) {
+			                            DebMes('Error: exception ' . get_class($e) . ', ' . $e->getMessage() . '.');
+			                        }
+			                    }
 	  }
 
  }

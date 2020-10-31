@@ -14,15 +14,24 @@
 <div style="margin:30px;">
 <form action="?" method="post">
 <table width="100%" border="0">
+<tr>
+<td valign="top" style="width: 0%;"></td>
+<td valign="top" style="width: auto;">Название:</td>
+</tr>
+
  <tr>
-  <td valign="top" style="width: 10%;"><#LANG_TITLE#>:</td>
-  <td valign="top"><input style="width: 55%;height: 50px;font-size: 21px;" class="form-control" type="text" name="title" value="[#TITLE#]" size="50">
+  <td></td>
+  <td valign="top"><input style="width: 25%;height: 50px;font-size: 21px;" type="text" name="title" value="[#TITLE#]">
   [#if SYSTEM!=""#]<br>(<#LANG_SYSTEM_NAME#>: [#SYSTEM#])[#endif#]
   </td>
  </tr>
 
 <tr>
- <td valign="top">Категория:</td>
+<td></td>
+<td valign="top" style="width: auto;">Категория:</td>
+</tr>
+
+ <td></td>
  <td valign="top">
  <select style="margin-top: 4px;width: auto;" class="box" name="calendar_category_id">
   <option value="0">Без категории
@@ -34,39 +43,38 @@
 </tr>
 
  <tr>
-  <td valign="top">&nbsp;</td>
+  <td></td>
   <td valign="top">
-   <label style="padding-bottom:30px;"><input type="radio" name="is_task" id="is_event" value="0"[#if IS_TASK!="1"#] checked[#endif#] data-role="none"> <#LANG_EVENT#></label>
+   <label style="padding-bottom:30px;"><input type="radio" name="is_task" id="is_event" value="0"[#if IS_TASK!="1"#] checked[#endif#] data-role="none"> Событие</label>
    &nbsp;&nbsp;
-   <label><input type="radio" name="is_task" id="is_task" value="1"[#if IS_TASK="1"#] checked[#endif#] data-role="none"> <#LANG_TASK#></label>
+   <label><input type="radio" name="is_task" id="is_task" value="1"[#if IS_TASK="1"#] checked[#endif#] data-role="none"> Задача</label>
    <span id="task_done_block"[#if IS_TASK!="1"#] style="display:none"[#endif#]>
-   <label><input type="checkbox" name="is_done" value="1"[#if IS_DONE="1"#] checked[#endif#] data-role="none"> <#LANG_DONE#></label>
+   <label><input type="checkbox" name="is_done" value="1"[#if IS_DONE="1"#] checked[#endif#] data-role="none"> Готово</label>
    </span>
    <span id="autodone_block"[#if IS_NODATE="1" || IS_TASK!="1"#] style="display:none"[#endif#]> 
    <input type="checkbox" name="autodone" value="1"[#if AUTODONE="1"#] checked[#endif#] data-role="none"> Автозавершение по сроку</span>
   </td>
  </tr>
-
+<tr>
+<td></td>
+<td valign="top" style="width: auto;">Срок:</td>
+</tr>
  <tr>
-  <td>Срок:</td>
+  <td></td>
   <td>
-  <label><input type="checkbox" name="is_nodate" id="is_nodate" value="1"[#if IS_NODATE="1"#] checked[#endif#] data-role="none">
-  без срока</label>
+  <label><input type="checkbox" name="is_nodate" id="is_nodate" value="1"[#if IS_NODATE="1"#] checked[#endif#] data-role="none"> Без срока</label>
   <span id="show_date"[#if IS_NODATE="1"#] style="display:none"[#endif#]>
-   <label><input type="checkbox" name="all_day" id="all_day" value="1"[#if ALL_DAY="1"#] checked[#endif#] data-role="none">
-  весь день</label>
-  <label><input type="checkbox" name="is_repeating" id="is_repeating" value="1"[#if IS_REPEATING="1"#] checked[#endif#] data-role="none">
-  с повторами</label>[#if IS_REPEATING="1" && DONE_WHEN#] предыдущее завершение :[#DONE_WHEN#][#endif#]</span>
-
+  <label><input type="checkbox" name="all_day" id="all_day" value="1"[#if ALL_DAY="1"#] checked[#endif#] data-role="none"> Весь день</label>
+  <label><input type="checkbox" name="is_repeating" id="is_repeating" value="1"[#if IS_REPEATING="1"#] checked[#endif#] data-role="none"> С повторами</label></span>
   </td>
 
  </tr>
 
 <tr>
-<td>&nbsp;</td>
+<td></td>
 <td>
-<input type="hidden" class="form-control" id="due" name="due" value="[#DUE#]" />
-<input type="hidden" class="form-control" id="end_time" name="end_time" value="[#END_TIME#]" />
+<input type="hidden" id="due" name="due" value="[#DUE#]" />
+<input type="hidden" id="end_time" name="end_time" value="[#END_TIME#]" />
 <div class="datetimepickers" id="dtps" [#if ALL_DAY="0" && IS_NODATE="0"#] style="display:block"[#else#] style="display:none"[#endif#]>
   <div class="col-xs-2">
         <div class="form-group">
@@ -167,11 +175,11 @@
 
 </td>
 </tr>
- <tr>
-  <td valign="top">
+<tr>
+<td valign="top">
 </td>
   <td valign="top">
-   <div id="repeat_type_block"[#if IS_REPEATING!="1"#] style="display:none"[#endif#]>
+<div id="repeat_type_block"[#if IS_REPEATING!="1"#] style="display:none"[#endif#]>
    <span id="every_lbl" style="font-size:18px">Повторять [#if REPEAT_TYPE="6"#]каждую[#else#] каждый[#endif#]</span>
    <input type="text" size="1" class="box" name="repeat_in" value="[#REPEAT_IN#][#if REPEAT_IN=""#]1[#endif#]">
    <select style="width: auto;" class="box" name="repeat_type" id="repeat_type" data-role="none">
@@ -183,32 +191,24 @@
     <option value="6"[#if REPEAT_TYPE="6"#] selected[#endif#]>минуту
    </select>
 
-<div id="restore_weekly_block" [#if REPEAT_TYPE!="3"#] style="display:none"[#endif#]>
+  <div id="restore_weekly_block" [#if REPEAT_TYPE!="3"#] style="display:none"[#endif#]>
 [#begin WDAYS#]
  			<input type="checkbox" name="week_days[]" value="[#VALUE#]"[#if SELECTED="1"#] checked[#endif#]>[#DNAME#] 
 [#end WDAYS#]
+  </div>
 </div>
-
- </div>
-
-  </td>
- </tr>
-<tr>
-<td>   
-
 </td>
-<td>
-
-
-</td>
-
 </tr>
- <tr>
-  <td valign="top">&nbsp;</td>
+<tr>
+<td></td>
+<td valign="top" style="width: auto;">&nbsp;</td>
+</tr>
+<tr>
+  <td></td>
   <td valign="top">
   <label><input type="checkbox" name="is_remind" id="is_remind" value="1" [#if IS_REMIND="1"#] checked[#endif#] data-role="none">Напомнить</label>
   </td>
- </tr>
+</tr>
 
 <tr>
 <td colspan="2">
@@ -216,8 +216,7 @@
 <table width="100%" border="0">
 
 <tr>
- <td valign="top" style="width: 10%;">&nbsp;
- </td>
+ <td valign="top" style="width: 0%;"></td>
  <td>
  <div>
 
@@ -237,8 +236,8 @@
 </div> 
  </td>
 </tr>
-<tr><td>&nbsp;</td></tr>
-<td>&nbsp;</td>
+<tr><td></td></tr>
+<td></td>
 <td>
 <input type="hidden" class="form-control" id="remind_time" name="remind_time" value="[#REMIND_TIME#]">
 <div class="col-xs-2" id="dps_remind_block" [#if REMIND_TIMER="10"#] style="display:block"[#else#] style="display:none"[#endif#]> 
@@ -266,20 +265,17 @@
 </td>
 </tr>
 <tr>
+<td></td>
  <td>
-&nbsp;
- </td>
- <td>
-   <label style="padding-bottom:30px;"><input type="radio" name="remind_type" id="sayto" value="0"[#if REMIND_TYPE="0"#] checked[#endif#] data-role="none"> Сказать</label>
-   &nbsp;&nbsp;
-   <label><input type="radio" name="remind_type" id="docode" value="1"[#if REMIND_TYPE="1"#] checked[#endif#] data-role="none"> Выполнить код</label>
+  <label><input type="radio" name="remind_type" id="sayto" value="0" [#if REMIND_TYPE="0"#] checked[#endif#] data-role="none"> Сказать</label>
+  <label><input type="radio" name="remind_type" id="docode" value="1"[#if REMIND_TYPE="1"#] checked[#endif#] data-role="none"> Выполнить код</label>
  </td>
 </tr>
 <tr>
 <td></td>
 <td valign="top" style="width: auto;">
 <span id="remind_code_block"[#if REMIND_TYPE!="1"#] style="display:none"[#endif#]>
-Код напоминания:<textarea style="width: auto;" class="form-control" id="remind_code" name="remind_code" cols="40" rows="4">[#REMIND_CODE#]</textarea>
+<textarea style="width: auto;" class="form-control" id="remind_code" name="remind_code" cols="40" rows="4">[#REMIND_CODE#]</textarea>
 </span>
 </td>
 
@@ -290,44 +286,49 @@
 </tr>
 
 <tr>
-<td valign="top" style="width: 10%;">&nbsp;</td>
-<td valign="top" style="width: auto;">&nbsp;</td>
-</tr>
-
-<tr>
-  <td valign="top">&nbsp;</td>
+  <td></td>
   <td valign="top">
-  <label><input type="checkbox" name="advanced" id="advanced" value="1" data-role="none"> <#LANG_MORE_DETAILS#></label>
+   <label class="box" name="advanced" id="advanced" onClick="toggle_show('advanced_details')"> &nbsp;&nbsp;Детали&nbsp;&nbsp;</label>
   </td>
 </tr>
 
 <tr>
 <td colspan="2">
-<div id="advanced_detais" style="width: 100%;display:none">
+<div id="advanced_details" style="width: 100%;display:none">
 <table width="100%" border="0">
-
+<tr>
+<td></td>
+<td>Заметки:</td>
+</tr>
  <tr>
-  <td valign="top" style="width: 10%;"><#LANG_NOTES#>:</td>
+  <td></td>
   <td valign="top" style="width: auto;">
   <textarea style="width: auto;" class="form-control" name="notes" cols="40" rows="3">[#NOTES#]</textarea>
 </td>
 </tr>
 <tr>
-  <td valign="top"><#LANG_USER#>:</td>
+<td></td>
+<td>Пользователь:</td>
+</tr>
+<tr>
+  <td></td>
   <td valign="top">
-  <select style="width: auto;" class="form-control" name="user_id">
-   <option value="0"><#LANG_ANY_USER#>
+  <select style="width: auto;" class="box" name="user_id">
+   <option value="0">Любой
    [#begin USERS#]
    <option value="[#ID#]"[#if ID="<#USER_ID#>"#] selected[#endif#]>[#NAME#]
    [#end USERS#]
   </select>
   </td>
  </tr>
-
+<tr>
+<td></td>
+<td><#LANG_RUN_SCRIPT#>:</td>
+</tr>
  <tr>
-  <td><#LANG_RUN_SCRIPT#>:</td>
+  <td></td>
   <td>
-   <select style="width: auto;" class="form-control" name="done_script_id">
+   <select style="width: auto;" class="box" name="done_script_id">
     <option value="0">
     [#begin SCRIPTS#]
     <option value="[#ID#]"[#if ID="<#DONE_SCRIPT_ID#>"#] selected[#endif#]>[#TITLE#]
@@ -336,19 +337,81 @@
    (<#LANG_WHEN_TASK_WILL_BE_DONE#>)
   </td>
  </tr>
-
-
+<tr>
+<td></td>
+<td>Выполнить код:</td>
+</tr>
+ <tr>
+  <td></td>
+  <td valign="top" style="width: auto;">
+  <textarea style="width: auto;" class="form-control" name="done_code" cols="40" rows="3">[#DONE_CODE#]</textarea>
+</td>
+ </tr>
 </table>
 </div>
 </td>
 </tr>
+
+<tr>
+  <td valign="top"></td>
+  <td valign="top">
+  <label class="box" name="hierarchy" id="hierarchy" onClick="toggle_show('hierarchy_details')"> &nbsp;&nbsp;Иерархия&nbsp;&nbsp;</label>
+  </td>
+</tr>
+<tr> 
+<td colspan="2">
+<div id="hierarchy_details" style="width: 100%;display:none">
+<table width="100%" border="0">
+<tr>
+<td>Главная задача:</td>
+</tr>
  <tr>
-  <td valign="top">&nbsp;</td>
+  <td valign="top" style="width: auto;">
+ 
+   <select style="width: auto;" class="box" name="parent_id">
+    <option value="0">нет главной задачи
+    [#begin FOR_LINKED_TASKS#]
+    <option value="[#ID#]"[#if ID="<#PARENT_ID#>"#] selected[#endif#]>&nbsp;&nbsp;[#TITLE#]
+    [#end FOR_LINKED_TASKS#]
+   </select>
+
+</td>
+</tr>
+<tr>
+<td></td>
+</tr>
+<tr>
+ <td valign="top">
+  <label><input type="checkbox" name="parent_progress" id="parent_progress" value="1" [#if PARENT_PROGRESS="1"#] checked[#endif#] data-role="none"> Закрывать при завершении всех подчиненных</label>
+</tr>
+<tr>
+<td>
+</td>
+</tr>
+ [#if OTHERS_REC_COUNT>0#]
+<tr>
+<td>Подчиненные: [#PROGRESS#] % </td>
+</tr>
+
+ [#begin OTHERS#]
+<tr>
+  <td valign="top" style="width: 20%;">
+ [#if IS_DONE="1"#]<strike>[#endif#][#TITLE#][#if IS_DONE="1"#]</strike>[#endif#]</td><td><a href="?view_mode=edit&id=[#ID#]"><img style="height: 20px;" src="../cms/calendar/settings.png" /></a>
+</td>
+</tr>
+[#end OTHERS#]
+[#endif#]
+</table>
+</div>
+</td>
+</tr>
+
+ <tr>
+  <td></td>
   <td valign="top"><input style="margin-top: 20px;" class="btn btn-default" type="submit" name="submit" value="<#LANG_SUBMIT#>">
   <a style="margin-top: 20px;" class="btn btn-default" href="?"><#LANG_CANCEL#></a>
   [#if ID!=""#]
-  <br><Br>
-  <small><a href="?view_mode=<#VIEW_MODE#>&id=<#ID#>&mode=delete" onClick="return confirm('<#LANG_ARE_YOU_SURE#>');"><#LANG_DELETE#></a></small>
+   <a style="margin-top: 20px;" class="btn btn-default" href="?view_mode=<#VIEW_MODE#>&id=<#ID#>&mode=delete" onClick="return confirm('<#LANG_ARE_YOU_SURE#>');"><#LANG_DELETE#></a>
   [#endif ID#]
   </td>
  </tr>
@@ -358,21 +421,8 @@
 </table>
 </form>
 </div>
-
-[#if OTHERS#]
 &nbsp;
-<div style="margin:30px;">
-<h1><#LANG_SIMILAR_ITEMS#></h1>
-<table width="100%" border="0">
- [#OTHERS#]
- <tr>
-  <td width="90%">[#if IS_DONE="1"#]<strike>[#endif#][#TITLE#]</td>
-  <td><a href="?view_mode=edit&id=[#ID#]"><#LANG_EDIT#></a></td>
- </tr>
- [#end OTHERS#]
-</table>
-</div>
-[#endif OTHERS#]
+
 
 <script language="javascript">
 
@@ -494,6 +544,20 @@
   var thisCheck = $(this);
 	  if (thisCheck.is(':checked')) {
 	   $('#remind_details').show();
+       if (document.getElementById('is_nodate').value == '1'){
+		   $('#remind_timer option[value=0]').hide();
+		   $('#remind_timer option[value=1]').hide();
+		   $('#remind_timer option[value=2]').hide();
+		   $('#remind_timer option[value=3]').hide();
+		   $('#remind_timer option[value=4]').hide();
+		   $('#remind_timer option[value=5]').hide();
+		   $('#remind_timer option[value=6]').hide();
+		   $('#remind_timer option[value=7]').hide();
+		   $('#remind_timer option[value=8]').hide();
+		   $('#remind_timer option[value=9]').hide();
+	       document.getElementById('remind_timer').value = 10;
+           $('#dps_remind_block').show();
+        }
 	  } else {
 	   $('#remind_details').hide();
 	  }
@@ -528,14 +592,8 @@
 	   $('#remind_code_block').show();
 	  }
  });
-  $('#advanced').click (function ()
-  {
-  var thisCheck = $(this);
-	  if (thisCheck.is(':checked')) {
-	   $('#advanced_detais').show();
-	  } else {
-	   $('#advanced_detais').hide();
-	  }
- });
 
+function toggle_show(id) {
+	document.getElementById(id).style.display = document.getElementById(id).style.display == 'none' ? 'block' : 'none';
+};
 </script>
