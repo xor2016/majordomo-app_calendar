@@ -107,15 +107,24 @@
         $("#st_time").on("dp.change", function (e) {
             
             document.getElementById('due').value = moment(e.date).format('YYYY-MM-DD HH:mm:ss');
-                     
+            //
             if(e.date>$('#en_time').data("DateTimePicker").date()){
               $('#en_time').data("DateTimePicker").date(e.date);
+            }
+            //check remind time only for absolut time         
+            if(e.date<$('#dps_remind').data("DateTimePicker").date()){
+              $('#dps_remind').data("DateTimePicker").date(e.date);
+              $('#dps_remind').data("DateTimePicker").maxDate($('#en_time').data("DateTimePicker").date());//max time for remind
             }
             //установим минимум выбора даты конца 
             $('#en_time').data("DateTimePicker").minDate(e.date);
         });
         $("#en_time").on("dp.change", function (e) {
            document.getElementById('end_time').value = moment(e.date).format('YYYY-MM-DD HH:mm:ss');
+           if(e.date<$('#dps_remind').data("DateTimePicker").date()){
+              $('#dps_remind').data("DateTimePicker").date(e.date);
+              $('#dps_remind').data("DateTimePicker").maxDate(e.date);//max time for remind
+            }
         });
     });
 </script>
@@ -157,10 +166,14 @@
         $("#st_time1").on("dp.change", function (e) {
             
             document.getElementById('due').value = moment(e.date).format('YYYY-MM-DD HH:mm:ss');
-            //alert(moment(e.date).format('YYYY-MM-DD HH:mm:ss'));
-           
+       
             if(e.date>$('#en_time1').data("DateTimePicker").date()){
               $('#en_time1').data("DateTimePicker").date(e.date);
+            }
+            //check remind time          
+            if(e.date<$('#dps_remind').data("DateTimePicker").date()){
+              $('#dps_remind').data("DateTimePicker").date(e.date);
+              $('#dps_remind').data("DateTimePicker").maxDate($('#en_time1').data("DateTimePicker").date());//max time for remind
             }
             //установим минимум выбора даты конца 
             $('#en_time1').data("DateTimePicker").minDate(e.date);
@@ -169,6 +182,9 @@
         });
         $("#en_time1").on("dp.change", function (e) {
            document.getElementById('end_time').value = moment(e.date).format('YYYY-MM-DD HH:mm:ss');
+           if(e.date<$('#dps_remind').data("DateTimePicker").date()){
+              $('#dps_remind').data("DateTimePicker").date(e.date);
+              $('#dps_remind').data("DateTimePicker").maxDate(e.date);//max time for remind
         });
     });
 </script>
@@ -254,7 +270,7 @@
     $(function () {
         // инициализация 
         $("#dps_remind").datetimepicker({
-            locale: "ru" ,sideBySide:true, defaultDate: isNaN(moment("[#REMIND_TIME#]","YYYY-MM-DD HH:mm:ss"))?moment():moment("[#REMIND_TIME#]","YYYY-MM-DD HH:mm:ss")
+            locale: "ru" ,sideBySide:true, defaultDate: moment(document.getElementById('remind_time').value,"YYYY-MM-DD HH:mm:ss"),maxDate: moment(document.getElementById('due').value,"YYYY-MM-DD HH:mm:ss")
         });
         $("#dps_remind").on("dp.change", function (e) {
            document.getElementById('remind_time').value = moment(e.date).format('YYYY-MM-DD HH:mm:ss');
@@ -382,17 +398,13 @@
 </tr>
 <tr>
  <td valign="top">
-  <label><input type="checkbox" name="parent_progress" id="parent_progress" value="1" [#if PARENT_PROGRESS="1"#] checked[#endif#] data-role="none"> Закрывать при завершении всех подчиненных</label>
+  <label><input type="checkbox" name="autodone_by_childs" id="autodone_by_childs" value="1" [#if AUTODONE_BY_CHILDS="1"#] checked[#endif#] data-role="none"> Готово при завершении всех подчиненных</label>
 </tr>
 <tr>
 <td>
 </td>
 </tr>
  [#if OTHERS_REC_COUNT>0#]
-<tr>
-<td>Подчиненные: [#PROGRESS#] % </td>
-</tr>
-
  [#begin OTHERS#]
 <tr>
   <td valign="top" style="width: 20%;">
@@ -532,7 +544,7 @@
 	   $('#restore_weekly_block').hide();
 	  }
 
-      if (thisCheck.val()=='6') {
+      if (thisCheck.val()=='6') {//для минут
 	   document.getElementById("every_lbl").textContent="Повторять каждую ";
 	  } else {
 	   document.getElementById("every_lbl").textContent="Повторять каждый ";
@@ -544,7 +556,7 @@
   var thisCheck = $(this);
 	  if (thisCheck.is(':checked')) {
 	   $('#remind_details').show();
-       if (document.getElementById('is_nodate').value == '1'){
+       if (document.getElementById('is_nodate').checked){
 		   $('#remind_timer option[value=0]').hide();
 		   $('#remind_timer option[value=1]').hide();
 		   $('#remind_timer option[value=2]').hide();
@@ -557,6 +569,17 @@
 		   $('#remind_timer option[value=9]').hide();
 	       document.getElementById('remind_timer').value = 10;
            $('#dps_remind_block').show();
+        }else{
+		   $('#remind_timer option[value=0]').show();
+		   $('#remind_timer option[value=1]').show();
+		   $('#remind_timer option[value=2]').show();
+		   $('#remind_timer option[value=3]').show();
+		   $('#remind_timer option[value=4]').show();
+		   $('#remind_timer option[value=5]').show();
+		   $('#remind_timer option[value=6]').show();
+		   $('#remind_timer option[value=7]').show();
+		   $('#remind_timer option[value=8]').show();
+		   $('#remind_timer option[value=9]').show();
         }
 	  } else {
 	   $('#remind_details').hide();

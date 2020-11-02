@@ -50,12 +50,13 @@ input[type=checkbox] {height: 15px;width: 15px;vertical-align: bottom;margin-top
  [#begin EVENTS_NODATE#]
  <tr [#if PARENT_ID>"0"#]name="not_parent" id="not_parent" style="display: block;"[#else#] id="is_parent" style="display: block;"[#endif#]>
   <td>[#if ICON!=""#]<img style="width: 15px;" src="<#ROOTHTML#>cms/calendar/[#ICON#]">[#endif ICON#]</td>
+ 
  <td valign="top">[#if IS_TASK="1"#]<i style="font-size:30px; color:DarkSlateGray;" class="glyphicon glyphicon-ok-circle" title="Задача"></i>[#else#]<i style="font-size:30px; color:orange;" class="glyphicon glyphicon-star" title="Событие">[#endif#]</td>
 
   <td>[#if IS_REMIND="1"#]<i style="font-size:20px; color:DimGrey;" class="glyphicon glyphicon-bell">[#endif IS_REMIND#]</td>
   <td>[#if AUTODONE="1"#]<i style="font-size:20px; color:orange;" class="glyphicon glyphicon-flash">[#endif AUTODONE#]</td>
   <td>[#if IS_MAIN>0 && PARENT_ID="0"#]<i style="font-size:20px; color:DimGrey;" class="glyphicon glyphicon-circle-arrow-down">[#endif#]</td>
-  <td id="yestask" width="100%"><span id="task_title[#ID#]">[#if IS_NODATE="0"#][#if ALL_DAY="0"#] ([#due_time#]) [#endif#][#endif#][#if PARENT_ID>0#] - [#endif#]<b>[#TITLE#]</b></span> <div class="menu"><a href="?view_mode=edit&id=[#ID#]"><img style="height: 15px;" src="../cms/calendar/settings.png" /></a>[#if IS_TASK="1"#] | <input type="checkbox" name="task[#ID#]" class="tasks" value="[#ID#]" data-role="none">[#endif#]</div> [#if NOTES=""#][#else#]<span style="color: grey; font-style: italic;"> — [#NOTES#]</span>[#endif#]</td>
+  <td id="yestask" width="100%"><span id="task_title[#ID#]">[#if IS_NODATE="0"#][#if ALL_DAY="0"#] ([#due_time#]) [#endif#][#endif#][#if PARENT_ID>0#] - [#endif#]<b>[#TITLE#]</b></span> <div class="menu"><a href="?view_mode=edit&id=[#ID#]"><img style="height: 15px;" src="../cms/calendar/settings.png" /></a>[#if IS_TASK="1"#] | <input type="checkbox" name="task[#ID#]" class="tasks" value="[#ID#]" data-role="none">[#endif#]</div>[#if PR>0#]<span style="color: DimGrey; font-size:20px;">(готово [#PR#]% )</<span>[#endif#][#if NOTES=""#][#else#]<span style="color: grey; font-style: italic;"> — [#NOTES#]</span>[#endif#]</td>
   <!--td><a style="font-size: 13px;" href="?view_mode=edit&id=[#ID#]"><#LANG_EDIT#></a></td-->
 
  </tr>
