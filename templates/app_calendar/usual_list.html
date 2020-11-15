@@ -1,200 +1,220 @@
-[#if ONLY_CALENDAR==0#]
-<style>
-input[type=checkbox] {height: 15px;width: 15px;vertical-align: bottom;margin-top: 0;}div.menu {display: none;}div.menu > a > img:hover {filter: saturate(300%);}#yestask:hover > div.menu {display: inline;}h2, .paddingleft {margin-left: 20px;}h1 {white-space:pre;}.menu {padding: 3px 7px 5px 6px;background-color: #efefef;border-radius: 5px;color: #9a9a9a;font-size: 14px;margin: 0 5px 0 3px;;border: 1px solid #bdbdbd;}.title {overflow: hidden;text-align: left;font-size: 22px;}.title span {vertical-align: middle;}.title:before, .title:after {content: "";display: inline-block;vertical-align: middle;width: 100%;height: 2px;background-color: #f3f3f3;position: relative;}.title:before {margin-left: calc(-100% - -20px);left: -7px;}.title:after {margin-right: -100%;right: -7px;}
-@media screen and (max-width: 800px) {.calendar-mob {display: none;}}
-
-</style>
-
+  <style>
+    body {
+      padding: 30px;
+    }
+    .tab-content {
+      padding: 14px;
+    }
+  </style>
+<div class="container-fluid">
 
 <form action="?" method="post">
-<table style="margin-top: 30px;" border="0" align="center">
- <tr>
-  <td valign="top"><input type="text" name="title" size="40"  class="form-control"></td>
-  <td valign="top">&nbsp;</td>
-  <td valign="top"><input type="submit" name="submit" value="<#LANG_ADD#>"  class="btn"></td>
- </tr>
- <input type="hidden" name="view_mode" value="edit">
-</table>
+<div class="row">
+		<div class="col-xs-6  col-6" style="background: #f7f7f9;border: 1px solid #e1e1e8;border-radius: 5px 0px 0px 0px;padding: 5px;">
+			<input name="title" autofocus placeholder="Новая задача/событие" style="padding: 5px;font-size: 20px;border: 0px;outline: none;box-shadow: 0 0 black;" class="form-control" type="input" size="50" >
+		</div>
+		<div class="col-xs-6  col-6" style="border: 0px;padding: 5px;">
+			<input  class="btn btn-success" type="submit" name="submit" value="Добавить">
+			<input type="hidden" name="view_mode" value="edit">
+		</div>
+</div>
+
 </form>
-<div id="cmdln">
-<label class="btn btn-default btn-sm" name="show_parent" id="hierarchy" onClick="toggle_show2('not_parent')"><span class="	glyphicon glyphicon-eye-open"></span>&nbsp;&nbsp;Подчиненные задачи&nbsp;&nbsp;</label>
-<input type="checkbox"  name="test2" value="0"> Фильтр по категориям todo
-</div>
-[#endif ONLY_CALENDAR#]
+<form class="form-inline"  name="frmFilter" method="post" action="?data_source=calendar_category&view_mode=search_calendar_events&mode=search">
+ <div>
+  Искать:
+ </div>
 
+ <div class="form-group ">
+  <select name="calendar_category_id" class="form-control" onchange="this.form.submit();">
+   <option value="">Категория
+    <option value="0" [#if CALENDAR_CATEGORY_ID="0"#] selected[#endif#]>Без категории
+    [#begin CATEGORIES#]<option value="[#ID#]"[#if ID="<#CALENDAR_CATEGORY_ID#>"#] selected[#endif#]>[#TITLE#]
+   [#end CATEGORIES#]
+  </select>
+ </div>
+</form>
+[#begin RESULT#]
+[#TITLE#]
+[#end RESULT#]
+	<div class="col-xs-12 col-sm-6 col-md-6 col-12" style="padding: 5px 0px;">
+    <ul class="nav nav-tabs" style="font-size: 15px;" id="tabs_pane">
+      <li>
+        <a data-toggle="tab" href="#tab_events_nodate">Без срока <span class="badge">{#EVENTS_NODATE_REC_COUNT#}</span></a>
+      </li>
+[#if EVENTS_OVERDUE_REC_COUNT>0#]
+      <li>
+        <a data-toggle="tab" href="#tab_overdue_events"><i style=" color:DarkOrange;" class="glyphicon glyphicon-exclamation-sign"></i>&nbsp;Просрочено <span class="badge">{#EVENTS_OVERDUE_REC_COUNT#}</span></a>
+      </li>
+[#endif#]
+      <li  class="active">
+        <a data-toggle="tab" href="#tab_events_today"><i style="color:CadetBlue;" class="glyphicon glyphicon-flag"></i>&nbsp;Сегодня <span class="badge">{#EVENTS_TODAY_REC_COUNT#}</span></a>
+      </li>
+      <li>
+        <a data-toggle="tab" href="#tab_events_tomorrow">Завтра <span class="badge">{#EVENTS_TOMORROW_REC_COUNT#}</span></a>
+      </li>
+      <li>
+        <a data-toggle="tab" href="#tab_events_after">Скоро <span class="badge">{#EVENTS_AFTER_REC_COUNT#}</span></a>
+      </li>
+      <!-- Вкладка с выпадающим списком -->
+      <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Дополнительно<span class="caret"></span></a>
+        <ul class="dropdown-menu">
+    	<li><a href="#tab_recently_done"><i style="color:green;" class="glyphicon glyphicon-ok"></i>&nbsp;Недавно завершено <span class="badge">{#RECENTLY_DONE_REC_COUNT#}</span></a></li>
+        <li><a href="#tab_calendar_full">Календарь</a></li>
+        <li><a href="#tab_categories">По категориям todo</a></li>
+		<li><a href="#tab_events_all">Все записи todo</a></li>
+        </ul>
+      </li>
 
-[#if SHOW_CALENDAR#]
-[#if ONLY_CALENDAR==0#]
- <div class="calendar-mob" style="float: right; width: 260px; padding-left: 10px;">
-[#endif ONLY_CALENDAR#]
-
-[#if YEAR_CALENDAR==0#]
- <div><a href="?calendar=1&year_calendar=1" class="btn btn-default btn-sm" style="margin-top: 10px;"><span class="glyphicon glyphicon-calendar"></span> Календарь на год</a></div>
-[#else#]
- <a onclick="javascript:history.back(); return false;" class="btn btn-default" style="font-weight: 600;width: 110px; display:block; margin-top: 10px;"><span class="	glyphicon glyphicon-hand-left"></span> Назад</a>
-[#endif YEAR_CALENDAR#]
-
-
-[#inc calendar_full_admin.html#]
-[#if ONLY_CALENDAR==0#]
-</div>
-[#endif ONLY_CALENDAR#]
-
-[#endif SHOW_CALENDAR#]
-
-[#if ONLY_CALENDAR==0#]
-<h1 class="title" id="h1_events_nodate" style="padding-top: 15px; color: green;" onClick="toggle_show('events_nodate_block')"><i style="font-size:35px; color:CadetBlue;" class="glyphicon glyphicon-bookmark"></i> Без даты  ({#EVENTS_NODATE_REC_COUNT#})</h1>
-<div  id="events_nodate_block" [#if EVENTS_NODATE_REC_COUNT > 5#]style="display:none;"[#endif EVENTS_NODATE_REC_COUNT#]> 
-<table class="paddingleft" border="0">
+    </ul>
+	</div>
+<div class="clearfix"></div>
+    <div class="tab-content">
+      <div class="tab-pane fade" id="tab_events_nodate"> 
+		<h3><i style="color:CadetBlue;" class="glyphicon glyphicon-bookmark"></i>&nbsp;Задачи и события без срока</h3>
 [#if EVENTS_NODATE#]
- [#begin EVENTS_NODATE#]
- <tr [#if PARENT_ID>"0"#]name="not_parent" id="not_parent" style="display: block;"[#else#] id="is_parent" style="display: block;"[#endif#]>
-  <td>[#if ICON!=""#]<img style="width: 15px;" src="<#ROOTHTML#>cms/calendar/[#ICON#]">[#endif ICON#]</td>
+[#begin EVENTS_NODATE#]
+				<span>[#if ICON#]<img style="width: 25px;" src="<#ROOTHTML#>cms/calendar/[#ICON#]">[#else#]<i class="glyphicon glyphicon-question-sign" style="font-size:25px; color:lightgray;" aria-hidden="true" title="Без категории"></i>[#endif ICON#]</span>&nbsp;
+				<span >[#if IS_TASK="1"#]<i style="font-size:20px; color:green;" aria-hidden="true"  class="glyphicon glyphicon-ok-sign" title="Задача"></i>[#else#]<i   style="font-size:20px; color:blue;" aria-hidden="true"  class="glyphicon glyphicon-info-sign" title="Событие"></i>[#endif#]</span>
+				[#if IS_REMIND="1"#]<i style="font-size:20px; color:Darkorange;" class="glyphicon glyphicon-bell" title="Напоминание"></i>[#else#]<i style="font-size:20px; color:lightgray;" class="glyphicon glyphicon-bell" title="Не напоминать"></i>[#endif IS_REMIND#]
+				[#if AUTODONE="1"#]<i style="font-size:20px; color:orange;" class="glyphicon glyphicon-flash" title="Автозавершение"></i>[#else#]<i style="font-size:20px; color:lightgray;" class="glyphicon glyphicon-flash" title="Без Автозавершения"></i>[#endif AUTODONE#]
+				<span style="font-size:15px; color:DarkSlateGray;">&nbsp;<a href="?view_mode=edit&id=[#ID#]">[#if IS_MAIN>0#]<b>[#TITLE#]</b>[#else#][#TITLE#][#endif#]</a></span>[#if NOTES!=""#]<span style="color: grey; font-style: italic;"> [#NOTES#]</span>[#endif#]<br>
+
+[#end EVENTS_NODATE#]
+[#endif EVENTS_NODATE#]
+      </div>
+      <div class="tab-pane fade in active" id="tab_events_today">
+		<h3><i style="color:CadetBlue;" class="glyphicon glyphicon-flag"></i>&nbsp;Сегодняшние дела</h3>
+[#if EVENTS_TODAY#]
+[#begin EVENTS_TODAY#]
+				<span>[#if ICON#]<img style="width: 25px;" src="<#ROOTHTML#>cms/calendar/[#ICON#]">[#else#]<i class="glyphicon glyphicon-question-sign" style="font-size:25px; color:lightgray;" aria-hidden="true" title="Без категории"></i>[#endif ICON#]</span>&nbsp;
+				<span >[#if IS_TASK="1"#]<i style="font-size:20px; color:green;" aria-hidden="true"  class="glyphicon glyphicon-ok-sign" title="Задача"></i>[#else#]<i   style="font-size:20px; color:blue;" aria-hidden="true"  class="glyphicon glyphicon-info-sign" title="Событие"></i>[#endif#]</span>
+				[#if IS_REMIND="1"#]<i style="font-size:20px; color:Darkorange;" class="glyphicon glyphicon-bell" title="Напоминание"></i>[#else#]<i style="font-size:20px; color:lightgray;" class="glyphicon glyphicon-bell" title="Не напоминать"></i>[#endif IS_REMIND#]
+				[#if AUTODONE="1"#]<i style="font-size:20px; color:orange;" class="glyphicon glyphicon-flash" title="Автозавершение"></i>[#else#]<i style="font-size:20px; color:lightgray;" class="glyphicon glyphicon-flash" title="Без Автозавершения"></i>[#endif AUTODONE#]
+				[#if IS_REPEATING="1"#]<i style="font-size:20px; color:black;" class="glyphicon glyphicon-repeat" title="Повторение"></i>[#else#]<i style="font-size:20px; color:lightgray;" class="glyphicon glyphicon-repeat" title="Без повторов"></i>[#endif IS_REPEATING#]
+				&nbsp;[#if ALL_DAY="0"#][#due_time#][#else#]сутки[#endif#]
+				<span style="font-size:15px; color:DarkSlateGray;">&nbsp;<a href="?view_mode=edit&id=[#ID#]">[#if IS_MAIN>0#]<b>[#TITLE#]</b>[#else#][#TITLE#][#endif#]</a></span>[#if NOTES!=""#]<span style="color: grey; font-style: italic;"> [#NOTES#]</span>[#endif#]<br>
+
+[#end EVENTS_TODAY#]
+[#endif EVENTS_TODAY#]
+      </div>
+
+     <div class="tab-pane fade" id="tab_events_tomorrow">
+		<h3><i style="color:CadetBlue;" class="glyphicon glyphicon-tag"></i>&nbsp;Дела на завтра</h3>
+[#if EVENTS_TOMORROW#]
+[#begin EVENTS_TOMORROW#]
+				<span>[#if ICON#]<img style="width: 25px;" src="<#ROOTHTML#>cms/calendar/[#ICON#]">[#else#]<i class="glyphicon glyphicon-question-sign" style="font-size:25px; color:lightgray;" aria-hidden="true" title="Без категории"></i>[#endif ICON#]</span>&nbsp;
+				<span >[#if IS_TASK="1"#]<i style="font-size:20px; color:green;" aria-hidden="true"  class="glyphicon glyphicon-ok-sign" title="Задача"></i>[#else#]<i   style="font-size:20px; color:blue;" aria-hidden="true"  class="glyphicon glyphicon-info-sign" title="Событие"></i>[#endif#]</span>
+				[#if IS_REMIND="1"#]<i style="font-size:20px; color:Darkorange;" class="glyphicon glyphicon-bell" title="Напоминание"></i>[#else#]<i style="font-size:20px; color:lightgray;" class="glyphicon glyphicon-bell" title="Не напоминать"></i>[#endif IS_REMIND#]
+				[#if AUTODONE="1"#]<i style="font-size:20px; color:orange;" class="glyphicon glyphicon-flash" title="Автозавершение"></i>[#else#]<i style="font-size:20px; color:lightgray;" class="glyphicon glyphicon-flash" title="Без Автозавершения"></i>[#endif AUTODONE#]
+				[#if IS_REPEATING="1"#]<i style="font-size:20px; color:black;" class="glyphicon glyphicon-repeat" title="Повторение"></i>[#else#]<i style="font-size:20px; color:lightgray;" class="glyphicon glyphicon-repeat" title="Без повторов"></i>[#endif IS_REPEATING#]
+				&nbsp;[#if ALL_DAY="0"#][#due_time#][#else#]сутки[#endif#]
+				<span style="font-size:15px; color:DarkSlateGray;">&nbsp;<a href="?view_mode=edit&id=[#ID#]">[#if IS_MAIN>0#]<b>[#TITLE#]</b>[#else#][#TITLE#][#endif#]</a></span>[#if NOTES!=""#]<span style="color: grey; font-style: italic;"> [#NOTES#]</span>[#endif#]<br>
+
+[#end EVENTS_TOMORROW#]
+[#endif EVENTS_TOMORROW#]
+
+	</div>
+     <div class="tab-pane fade" id="tab_events_after">
+		<h3><i style="color:CadetBlue;" class="glyphicon glyphicon-tags"></i>&nbsp;Ближайшие дела</h3>
+	[#if EVENTS_AFTER#]
+	[#begin EVENTS_AFTER#]
+					<span>[#if ICON#]<img style="width: 25px;" src="<#ROOTHTML#>cms/calendar/[#ICON#]">[#else#]<i class="glyphicon glyphicon-question-sign" style="font-size:25px; color:lightgray;" aria-hidden="true" title="Без категории"></i>[#endif ICON#]</span>&nbsp;
+					<span >[#if IS_TASK="1"#]<i style="font-size:20px; color:green;" aria-hidden="true"  class="glyphicon glyphicon-ok-sign" title="Задача"></i>[#else#]<i   style="font-size:20px; color:blue;" aria-hidden="true"  class="glyphicon glyphicon-info-sign" title="Событие"></i>[#endif#]</span>
+					[#if IS_REMIND="1"#]<i style="font-size:20px; color:Darkorange;" class="glyphicon glyphicon-bell" title="Напоминание"></i>[#else#]<i style="font-size:20px; color:lightgray;" class="glyphicon glyphicon-bell" title="Не напоминать"></i>[#endif IS_REMIND#]
+					[#if AUTODONE="1"#]<i style="font-size:20px; color:orange;" class="glyphicon glyphicon-flash" title="Автозавершение"></i>[#else#]<i style="font-size:20px; color:lightgray;" class="glyphicon glyphicon-flash" title="Без Автозавершения"></i>[#endif AUTODONE#]
+					[#if IS_REPEATING="1"#]<i style="font-size:20px; color:black;" class="glyphicon glyphicon-repeat" title="Повторение"></i>[#else#]<i style="font-size:20px; color:lightgray;" class="glyphicon glyphicon-repeat" title="Без повторов"></i>[#endif IS_REPEATING#]
+					&nbsp;[#if ALL_DAY="0"#][#due_time#][#else#][#due_date#]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[#endif#]
+					<span style="font-size:15px; color:DarkSlateGray;">&nbsp;<a href="?view_mode=edit&id=[#ID#]">[#if IS_MAIN>0#]<b>[#TITLE#]</b>[#else#][#TITLE#][#endif#]</a></span>[#if NOTES!=""#]<span style="color: grey; font-style: italic;">  [#NOTES#]</span>[#endif#]<br>
+	
+	[#end EVENTS_AFTER#]
+	[#endif EVENTS_AFTER#]
+
+	</div>
+	<div class="tab-pane fade" id="tab_recently_done">
+		<h3><i style="color:green;" class="glyphicon glyphicon-ok"></i>&nbsp;Недавно завершённые дела</h3>
+	[#if RECENTLY_DONE#]
+	[#begin RECENTLY_DONE#]
+					<span>[#if ICON#]<img style="width: 25px;" src="<#ROOTHTML#>cms/calendar/[#ICON#]">[#else#]<i class="glyphicon glyphicon-question-sign" style="font-size:25px; color:lightgray;" aria-hidden="true" title="Без категории"></i>[#endif ICON#]</span>&nbsp;
+					<span >[#if IS_TASK="1"#]<i style="font-size:20px; color:green;" aria-hidden="true"  class="glyphicon glyphicon-ok-sign" title="Задача"></i>[#else#]<i   style="font-size:20px; color:blue;" aria-hidden="true"  class="glyphicon glyphicon-info-sign" title="Событие"></i>[#endif#]</span>
+					[#if IS_REMIND="1"#]<i style="font-size:20px; color:Darkorange;" class="glyphicon glyphicon-bell" title="Напоминание"></i>[#else#]<i style="font-size:20px; color:lightgray;" class="glyphicon glyphicon-bell" title="Не напоминать"></i>[#endif IS_REMIND#]
+					[#if AUTODONE="1"#]<i style="font-size:20px; color:orange;" class="glyphicon glyphicon-flash" title="Автозавершение"></i>[#else#]<i style="font-size:20px; color:lightgray;" class="glyphicon glyphicon-flash" title="Без Автозавершения"></i>[#endif AUTODONE#]
+					[#if IS_REPEATING="1"#]<i style="font-size:20px; color:black;" class="glyphicon glyphicon-repeat" title="Повторение"></i>[#else#]<i style="font-size:20px; color:lightgray;" class="glyphicon glyphicon-repeat" title="Без повторов"></i>[#endif IS_REPEATING#]
+					&nbsp;[#due_time#]&nbsp;
+					<span style="font-size:15px; color:DarkSlateGray;">&nbsp;<a href="?view_mode=edit&id=[#ID#]">[#if IS_MAIN>0#]<b>[#TITLE#]</b>[#else#][#TITLE#][#endif#]</a></span>[#if NOTES!=""#]&nbsp;[#LOG#]&nbsp;<span style="color: grey; font-style: italic;"> [#NOTES#]</span>[#endif#]<br>
+	
+	[#end RECENTLY_DONE#]
+	[#endif RECENTLY_DONE#]
+	</div>
+	<div class="tab-pane fade" id="tab_overdue_events">
+		<h3><i style="color:DarkOrange;" class="glyphicon glyphicon-exclamation-sign"></i>&nbsp;Просроченные дела</h3>
+	[#if EVENTS_OVERDUE#]
+	[#begin EVENTS_OVERDUE#]
+					<span>[#if ICON#]<img style="width: 25px;" src="<#ROOTHTML#>cms/calendar/[#ICON#]">[#else#]<i class="glyphicon glyphicon-question-sign" style="font-size:25px; color:lightgray;" aria-hidden="true" title="Без категории"></i>[#endif ICON#]</span>&nbsp;
+					<span >[#if IS_TASK="1"#]<i style="font-size:20px; color:DarkRed;" aria-hidden="true"  class="glyphicon glyphicon-ok-sign" title="Задача"></i>[#else#]<i   style="font-size:20px; color:orange;" aria-hidden="true"  class="glyphicon glyphicon-info-sign" title="Событие"></i>[#endif#]</span>
+					[#if IS_REMIND="1"#]<i style="font-size:20px; color:Darkorange;" class="glyphicon glyphicon-bell" title="Напоминание"></i>[#else#]<i style="font-size:20px; color:lightgray;" class="glyphicon glyphicon-bell" title="Не напоминать"></i>[#endif IS_REMIND#]
+					[#if AUTODONE="1"#]<i style="font-size:20px; color:orange;" class="glyphicon glyphicon-flash" title="Автозавершение"></i>[#else#]<i style="font-size:20px; color:lightgray;" class="glyphicon glyphicon-flash" title="Без Автозавершения"></i>[#endif AUTODONE#]
+					[#if IS_REPEATING="1"#]<i style="font-size:20px; color:black;" class="glyphicon glyphicon-repeat" title="Повторение"></i>[#else#]<i style="font-size:20px; color:lightgray;" class="glyphicon glyphicon-repeat" title="Без повторов"></i>[#endif IS_REPEATING#]
+					&nbsp;[#if ALL_DAY="0"#][#due_time#][#else#][#due_date#]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[#endif#]
+					<span style="font-size:15px; color:DarkSlateGray;">&nbsp;<a href="?view_mode=edit&id=[#ID#]">[#if IS_MAIN>0#]<b>[#TITLE#]</b>[#else#][#TITLE#][#endif#]</a></span>[#if NOTES!=""#]&nbsp;[#LOG#]&nbsp;<span style="color: grey; font-style: italic;"> [#NOTES#]</span>[#endif#]<br>
+	
+	[#end EVENTS_OVERDUE#]
+	[#endif EVENTS_OVERDUE#]
+	</div>
+	<div class="tab-pane fade" id="tab_events_all">
+		<h3><i style="color:CadetBlue;" class="glyphicon glyphicon-tags"></i>&nbsp;Все записи</h3>
  
- <td valign="top">[#if IS_TASK="1"#]<i style="font-size:30px; color:DarkSlateGray;" class="glyphicon glyphicon-ok-circle" title="Задача"></i>[#else#]<i style="font-size:30px; color:orange;" class="glyphicon glyphicon-star" title="Событие">[#endif#]</td>
 
-  <td>[#if IS_REMIND="1"#]<i style="font-size:20px; color:DimGrey;" class="glyphicon glyphicon-bell">[#endif IS_REMIND#]</td>
-  <td>[#if AUTODONE="1"#]<i style="font-size:20px; color:orange;" class="glyphicon glyphicon-flash">[#endif AUTODONE#]</td>
-  <td>[#if IS_MAIN>0 && PARENT_ID="0"#]<i style="font-size:20px; color:DimGrey;" class="glyphicon glyphicon-circle-arrow-down">[#endif#]</td>
-  <td id="yestask" width="100%"><span id="task_title[#ID#]">[#if IS_NODATE="0"#][#if ALL_DAY="0"#] ([#due_time#]) [#endif#][#endif#][#if PARENT_ID>0#] - [#endif#]<b>[#TITLE#]</b></span> <div class="menu"><a href="?view_mode=edit&id=[#ID#]"><img style="height: 15px;" src="../cms/calendar/settings.png" /></a>[#if IS_TASK="1"#] | <input type="checkbox" name="task[#ID#]" class="tasks" value="[#ID#]" data-role="none">[#endif#]</div>[#if PR>0#]<span style="color: DimGrey; font-size:20px;">(готово [#PR#]% )</<span>[#endif#][#if NOTES=""#][#else#]<span style="color: grey; font-style: italic;"> — [#NOTES#]</span>[#endif#]</td>
-  <!--td><a style="font-size: 13px;" href="?view_mode=edit&id=[#ID#]"><#LANG_EDIT#></a></td-->
 
- </tr>
-
- [#end EVENTS_NODATE#]
- [#endif EVENTS_NODATE#]
+<table class="table">
+            <thead>
+            <tr>
+                <th>Срок</th>
+                <th>Категория</th>
+                <th>Атрибуты</th>
+                <th>Наименование</th>
+            </tr>
+            </thead>
+            <tbody>
+	[#if EVENTS_ALL#]
+	[#begin EVENTS_ALL#]
+<tr>
+	<td>[#due_time#]</td>
+	<td>
+	<span>[#if ICON#]<img style="width: 15px;" src="<#ROOTHTML#>cms/calendar/[#ICON#]">&nbsp;[#CAT_NAME#][#else#]<i class="glyphicon glyphicon-question-sign" style="font-size:15px; color:lightgray;" aria-hidden="true" title="Без категории"></i>&nbsp;Без категории[#endif ICON#]</span>
+	</td>
+	<td>
+	<span >[#if IS_TASK="1"#]<i style="color:green;" aria-hidden="true"  class="glyphicon glyphicon-ok-sign" title="Задача"></i>[#else#]<i   style="color:blue;" aria-hidden="true"  class="glyphicon glyphicon-info-sign" title="Событие"></i>[#endif#]</span>
+	[#if IS_REMIND="1"#]<i style="color:Darkorange;" class="glyphicon glyphicon-bell" title="Напоминание"></i>[#else#]<i style="color:lightgray;" class="glyphicon glyphicon-bell" title="Не напоминать"></i>[#endif IS_REMIND#]
+	[#if AUTODONE="1"#]<i style="color:orange;" class="glyphicon glyphicon-flash" title="Автозавершение"></i>[#else#]<i style="color:lightgray;" class="glyphicon glyphicon-flash" title="Без Автозавершения"></i>[#endif AUTODONE#]
+	[#if IS_REPEATING="1"#]<i style="color:black;" class="glyphicon glyphicon-repeat" title="Повторение"></i>[#else#]<i style="color:lightgray;" class="glyphicon glyphicon-repeat" title="Без повторов"></i>[#endif IS_REPEATING#]
+	[#if IS_DONE="1"#]<i style="color:green;" class="glyphicon glyphicon-ok" title="Готово"></i>[#else#]<i style="color:lightgray;" class="glyphicon glyphicon-ok" title="Не выполнено"></i>[#endif IS_DONE#]
+	</td>
+	<td>
+		<span style="color:DarkSlateGray;"><a href="?view_mode=edit&id=[#ID#]">[#TITLE#]</a></span>
+	</td>
+</tr>
+	[#end EVENTS_ALL#]
+	[#endif EVENTS_ALL#]
+            </tbody>
 </table>
+	</div>
+	<div class="tab-pane fade" id="tab_calendar_full">
+		<h3>Обзор дел и событий</h3>
+	 [#inc calendar_full_admin.html#]
+	</div>
 </div>
 
-<h1 class="title" style="padding-top: 15px; color: green;" onClick="toggle_show('events_today_block')"><i style="font-size:40px; color:CadetBlue;" class="glyphicon glyphicon-flag"></i>  <#LANG_TODAY#>  [#if EVENTS_TODAY#]({#EVENTS_TODAY_REC_COUNT#})[#else#] нет[#endif#]</h1>
-<div  id="events_today_block"  [#if EVENTS_TODAY_REC_COUNT > 5#]style="display:none;"[#endif EVENTS_TODAY_REC_COUNT#]> 
-<table class="paddingleft" border="0">
- [#if EVENTS_TODAY#]
- [#begin EVENTS_TODAY#]
- <tr [#if PARENT_ID>"0"#]name="not_parent" id="not_parent" style="display: block;"[#else#] id="is_parent" style="display: block;"[#endif#]>
-  <td>[#if ICON!=""#]<img style="width: 15px;" src="<#ROOTHTML#>cms/calendar/[#ICON#]">[#endif ICON#]</td>
- <td valign="top">[#if IS_TASK="1"#]<i style="font-size:30px; color:DarkSlateGray;" class="glyphicon glyphicon-ok-circle" title="Задача"></i>[#else#]<i style="font-size:30px; color:orange;" class="glyphicon glyphicon-star" title="Событие">[#endif#]</td>
 
-  <td>[#if IS_REMIND="1"#]<i style="font-size:20px; color:DimGrey;" class="glyphicon glyphicon-bell">[#endif IS_REMIND#]</td>
-  <td>[#if AUTODONE="1"#]<i style="font-size:20px; color:orange;" class="glyphicon glyphicon-flash">[#endif AUTODONE#]</td>
-  <td>[#if IS_REPEATING="1"#]<i style="font-size:20px; color:DimGrey;" class="glyphicon glyphicon-repeat">[#endif#]</td>
-  
-  <td id="yestask" width="100%"><span id="task_title[#ID#]">[#if IS_NODATE="0"#][#if ALL_DAY="0"#] ([#due_time#]) [#endif#][#endif#]<b>[#TITLE#]</b></span> <div class="menu"><a href="?view_mode=edit&id=[#ID#]"><img style="height: 15px;" src="../cms/calendar/settings.png" /></a>[#if IS_TASK="1"#] | <input type="checkbox" name="task[#ID#]" class="tasks" value="[#ID#]" data-role="none">[#endif#]</div> [#if NOTES=""#][#else#]<span style="color: grey; font-style: italic;"> — [#NOTES#]</span>[#endif#]</td>
-  <!--td><a style="font-size: 13px;" href="?view_mode=edit&id=[#ID#]"><#LANG_EDIT#></a></td-->
- </tr>
- [#end EVENTS_TODAY#]
- [#else EVENTS_TODAY#]
- <tr>
-  <td colspan="3"><#LANG_NOTHING_TO_DO#></td>
- </tr>
- [#endif EVENTS_TODAY#]
-</table>
+
+
 </div>
-[#if EVENTS_OVERDUE#]
-<h1 class="title" style="padding-top: 15px; color: DarkOrange;" onClick="toggle_show('events_overdue_block')"><i style="font-size:40px; color:DarkOrange;" class="glyphicon glyphicon-exclamation-sign"></i> <b>Просрочено  ({#EVENTS_OVERDUE_REC_COUNT#})</b></h1>
-<div  id="events_overdue_block"  [#if EVENTS_OVERDUE_REC_COUNT > 2#]style="display:none;"[#endif EVENTS_OVERDUE_REC_COUNT#]> 
-<table class="paddingleft" border="0">
-
- [#begin EVENTS_OVERDUE#]
- <tr>
-  <td>[#if ICON!=""#]<img style="width: 15px;" src="<#ROOTHTML#>cms/calendar/[#ICON#]">[#endif ICON#]</td>
- <td valign="top">[#if IS_TASK="1"#]<i style="font-size:30px; color:DarkRed;" class="glyphicon glyphicon-ok-circle" title="Задача"></i>[#else#]<i style="font-size:30px; color:orange;" class="glyphicon glyphicon-star" title="Событие">[#endif#]</td>
-
-  <td>[#if IS_REMIND="1"#]<i style="font-size:20px; color:DimGrey;" class="glyphicon glyphicon-bell">[#endif IS_REMIND#]</td>
-  <td>[#if AUTODONE="1"#]<i style="font-size:20px; color:orange;" class="glyphicon glyphicon-flash">[#endif AUTODONE#]</td>
-  <td>[#if IS_REPEATING="1"#]<i style="font-size:20px; color:DimGrey;" class="glyphicon glyphicon-repeat">[#endif#]</td>
-  <td id="yestask" width="100%"><span id="task_title[#ID#]" style="color:DarkRed;">[#if IS_NODATE="0"#][#if ALL_DAY="0"#] ([#due_time#]) [#endif#][#endif#]<b>[#TITLE#]</b></span> <div class="menu"><a href="?view_mode=edit&id=[#ID#]"><img style="height: 15px;" src="../cms/calendar/settings.png" /></a>[#if IS_TASK="1"#] | <input type="checkbox" name="task[#ID#]" class="tasks" value="[#ID#]" data-role="none">[#endif#]</div> [#if NOTES=""#][#else#]<span style="color: grey; font-style: italic;"> — [#NOTES#]</span>[#endif#]</td>
-  <!--td><a style="font-size: 13px;" href="?view_mode=edit&id=[#ID#]"><#LANG_EDIT#></a></td-->
- </tr>
- [#end EVENTS_OVERDUE#]
- [#endif EVENTS_OVERDUE#]
-</table>
-</div>
-<h1 class="title" style="padding-top: 15px; color: green;" onClick="toggle_show('events_tomorrow_block')"><i style="font-size:35px; color:CadetBlue;" class="glyphicon glyphicon-tag"></i> Завтра  [#if EVENTS_TOMORROW#]({#EVENTS_TOMORROW_REC_COUNT#})[#else#] нет[#endif#]</h1>
-<div  id="events_tomorrow_block" [#if EVENTS_TOMORROW_REC_COUNT > 5#]style="display:none;"[#endif EVENTS_TOMORROW_REC_COUNT#]> 
-<table class="paddingleft" border="0">
- [#if EVENTS_TOMORROW#]
- [#begin EVENTS_TOMORROW#]
-  <tr [#if PARENT_ID>"0"#]name="not_parent" id="not_parent" style="display: block;"[#else#] id="is_parent" style="display: block;"[#endif#]>
-  <td>[#if ICON!=""#]<img style="width: 15px;" src="<#ROOTHTML#>cms/calendar/[#ICON#]">[#endif ICON#]</td>
- <td valign="top">[#if IS_TASK="1"#]<i style="font-size:30px; color:DarkSlateGray;" class="glyphicon glyphicon-ok-circle" title="Задача"></i>[#else#]<i style="font-size:30px; color:orange;" class="glyphicon glyphicon-star" title="Событие">[#endif#]</td>
-
-  <td>[#if IS_REMIND="1"#]<i style="font-size:20px; color:DimGrey;" class="glyphicon glyphicon-bell">[#endif IS_REMIND#]</td>
-  <td>[#if AUTODONE="1"#]<i style="font-size:20px; color:orange;" class="glyphicon glyphicon-flash">[#endif AUTODONE#]</td>
-  <td>[#if IS_REPEATING="1"#]<i style="font-size:20px; color:DimGrey;" class="glyphicon glyphicon-repeat">[#endif#]</td>
-  <td id="yestask" width="100%"><span id="task_title[#ID#]">[#if IS_NODATE="0"#][#if ALL_DAY="0"#] ([#due_time#]) [#endif#][#endif#]<b>[#TITLE#]</b></span> <div class="menu"><a href="?view_mode=edit&id=[#ID#]"><img style="height: 15px;" src="../cms/calendar/settings.png" /></a>[#if IS_TASK="1"#] | <input type="checkbox" name="task[#ID#]" class="tasks" value="[#ID#]" data-role="none">[#endif#]</div> [#if NOTES=""#][#else#]<span style="color: grey; font-style: italic;"> — [#NOTES#]</span>[#endif#]</td>
-  <!--td><a style="font-size: 13px;" href="?view_mode=edit&id=[#ID#]"><#LANG_EDIT#></a></td-->
- </tr>
- [#end EVENTS_TOMORROW#]
- [#endif EVENTS_TOMORROW#]
-</table>
-</div>
-
-[#if EVENTS_AFTER#]
-<h1 class="title" style="padding-top: 15px; color: green;" onClick="toggle_show('events_after_block')"><i style="font-size:35px; color:CadetBlue;" class="glyphicon glyphicon-tags"></i>  Ближайшие  ({#EVENTS_AFTER_REC_COUNT#})</h1>
-<div  id="events_after_block"  [#if EVENTS_AFTER_REC_COUNT > 4#]style="display:none;"[#endif EVENTS_AFTER_REC_COUNT#]> 
-<table class="paddingleft" border="0">
-
- [#begin EVENTS_AFTER#]
-  <tr [#if PARENT_ID>"0"#]name="not_parent" id="not_parent" style="display: block;"[#else#] id="is_parent" style="display: block;"[#endif#]>
-  <td>[#if ICON!=""#]<img style="width: 15px;" src="<#ROOTHTML#>cms/calendar/[#ICON#]">[#endif ICON#]</td>
-  <td valign="top">[#if IS_TASK="1"#]<i style="font-size:30px; color:DarkSlateGray;" class="glyphicon glyphicon-ok-circle" title="Задача"></i>[#else#]<i style="font-size:30px; color:orange;" class="glyphicon glyphicon-star" title="Событие">[#endif#]</td>
-
-  <td>[#if IS_REMIND="1"#]<i style="font-size:20px; color:DimGrey;" class="glyphicon glyphicon-bell">[#endif IS_REMIND#]</td>
-  <td>[#if AUTODONE="1"#]<i style="font-size:20px; color:orange;" class="glyphicon glyphicon-flash">[#endif AUTODONE#]</td>
-  <td>[#if IS_REPEATING="1"#]<i style="font-size:20px; color:DimGrey;" class="glyphicon glyphicon-repeat">[#endif#]</td>
-  <td id="yestask" width="100%"><span id="task_title[#ID#]">[#if ALL_DAY="0"#] ([#due_time#]) [#else#] ([#due_date#]) [#endif#]<b>[#TITLE#]</b></span> <div class="menu"><a href="?view_mode=edit&id=[#ID#]"><img style="height: 15px;" src="../cms/calendar/settings.png" /></a>[#if IS_TASK="1"#] | <input type="checkbox" name="task[#ID#]" class="tasks" value="[#ID#]" data-role="none">[#endif#]</div> [#if NOTES=""#][#else#]<span style="color: grey; font-style: italic;"> — [#NOTES#]</span>[#endif#]</td>
-  <!--td><a style="font-size: 13px;" href="?view_mode=edit&id=[#ID#]"><#LANG_EDIT#></a></td-->
- </tr>
- [#end EVENTS_AFTER#]
- [#endif EVENTS_AFTER#]
-</table>
-</div>
-
-[#if RECENTLY_DONE#]
-<h1 class="title" style="color: green; padding-top: 15px;" onClick="toggle_show('recently_done_block')"><i style="font-size:40px; color:green;" class="glyphicon glyphicon-ok"></i> <#LANG_DONE_RECENTLY#>  ({#RECENTLY_DONE_REC_COUNT#})</h1>
-<div id='recently_done_block'  [#if RECENTLY_DONE_REC_COUNT > 3#]style="display:none;"[#endif RECENTLY_DONE_REC_COUNT#]>
-<table class="paddingleft" border="0">
- [#begin RECENTLY_DONE#]
- <tr>
-  <td>[#if ICON!=""#]<img style="width: 15px;" src="<#ROOTHTML#>cms/calendar/[#ICON#]">[#endif ICON#]</td>
-   <td valign="top">[#if IS_TASK="1"#]<i style="font-size:30px; color:DarkSlateGray;" class="glyphicon glyphicon-ok-circle" title="Задача"></i>[#else#]<i style="font-size:30px; color:orange;" class="glyphicon glyphicon-star" title="Событие">[#endif#]</td>
-
-  <td>[#if IS_REMIND="1"#]<i style="font-size:20px; color:DimGrey;" class="glyphicon glyphicon-bell">[#endif IS_REMIND#]</td>
-  <td>[#if AUTODONE="1"#]<i style="font-size:20px; color:orange;" class="glyphicon glyphicon-flash">[#endif AUTODONE#]</td>
-  <td>[#if IS_REPEATING="1"#]<i style="font-size:20px; color:DimGrey;" class="glyphicon glyphicon-repeat">[#endif#]</td>
-  <td id="yestask" width="100%"><span style="text-decoration:line-through" id="task_title[#ID#]">[#if IS_NODATE="0"#][#if ALL_DAY="0"#] ([#due_time#]) [#endif#][#endif#]<b>[#TITLE#]</b></span> <div class="menu"><a href="?view_mode=edit&id=[#ID#]"><img style="height: 15px;" src="../cms/calendar/settings.png" /></a></div> [#if NOTES=""#][#else#]<span style="color: grey; font-style: italic;"> — <span style="text-decoration:line-through;">[#NOTES#]</span></span>[#endif#]</td>
-  <!--td><a style="font-size: 13px;" href="?view_mode=edit&id=[#ID#]"><#LANG_EDIT#></a></td-->
- </tr>
- [#end RECENTLY_DONE#]
-</table>
-</div>
-[#endif RECENTLY_DONE#]
-
-
 <script language="javascript">
- $('.tasks').click (function ()
-  {
-  var thisCheck = $(this);
-  if (thisCheck.is(':checked')) {
-   $('#task_title'+thisCheck.val()).css('text-decoration', 'line-through');
-   var url="?mode=is_done&id=";
-   window.location=url+thisCheck.val();
-  } else {
-   $('#task_title'+thisCheck.val()).css('text-decoration','none');
-   var url="?mode=reset_done&id=";
-   window.location=url+thisCheck.val();
-  }
- });
-function toggle_show(id) {
-	document.getElementById(id).style.display = document.getElementById(id).style.display == 'none' ? 'block' : 'none';
-};
-function toggle_show2(name) {
-    let elements = document.getElementsByName(name);
-	  for( let i = 0; i < elements.length; i++){ // проходим циклом по всем элементам массивоподобного объекта
-	    elements[i].style.display = elements[i].style.display == 'none' ? 'block' : 'none';
-	  }
-};
+    // #product a – селектор, выбирающий элементы a, представляющие собой вкладки (при клике на которые нужно отображать соответствующий блок)
+    $('#tabs_pane a').click(function (e) {
+      e.preventDefault();
+      $(this).tab('show');
+    });
+
 </script>
- <br><br>
-[#endif ONLY_CALENDAR#]

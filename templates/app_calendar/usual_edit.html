@@ -1,441 +1,512 @@
-<a style="margin: 15px 0px 5px 15px;" class="btn btn-default" href="?">Назад</a>
-    <style>
-      .box {
-      //width: 120px;
-      height: 30px;
-      border: 1px solid #999;
-      font-size: 18px;
-      //color: #1c87c9;
-      //background-color: #eee;
-      border-radius: 4px;
-      box-shadow: 4px 4px #ccc;
-      }
-    </style>
-<div style="margin:30px;">
+<div class="container-fluid">
 <form action="?" method="post">
-<table width="100%" border="0">
-<tr>
-<td valign="top" style="width: 0%;"></td>
-<td valign="top" style="width: auto;">Название:</td>
-</tr>
+<div class="row" style="margin-left: 20px;margin-right: 20px;">
 
- <tr>
-  <td></td>
-  <td valign="top"><input style="width: 25%;height: 50px;font-size: 21px;" type="text" name="title" value="[#TITLE#]">
-  [#if SYSTEM!=""#]<br>(<#LANG_SYSTEM_NAME#>: [#SYSTEM#])[#endif#]
-  </td>
- </tr>
-
-<tr>
-<td></td>
-<td valign="top" style="width: auto;">Категория:</td>
-</tr>
-
- <td></td>
- <td valign="top">
- <select style="margin-top: 4px;width: auto;" class="box" name="calendar_category_id">
-  <option value="0">Без категории
-  [#begin CALENDAR_CATEGORIES#]
-  <option value="[#ID#]" [#if ID="<#CALENDAR_CATEGORY_ID#>"#] selected[#endif#]>[#TITLE#]
-  [#end CALENDAR_CATEGORIES#]
-  </select>
- </td> 
-</tr>
-
- <tr>
-  <td></td>
-  <td valign="top">
-   <label style="padding-bottom:30px;"><input type="radio" name="is_task" id="is_event" value="0"[#if IS_TASK!="1"#] checked[#endif#] data-role="none"> Событие</label>
-   &nbsp;&nbsp;
-   <label><input type="radio" name="is_task" id="is_task" value="1"[#if IS_TASK="1"#] checked[#endif#] data-role="none"> Задача</label>
-   <span id="task_done_block"[#if IS_TASK!="1"#] style="display:none"[#endif#]>
-   <label><input type="checkbox" name="is_done" value="1"[#if IS_DONE="1"#] checked[#endif#] data-role="none"> Готово</label>
-   </span>
-   <span id="autodone_block"[#if IS_NODATE="1" || IS_TASK!="1"#] style="display:none"[#endif#]> 
-   <input type="checkbox" name="autodone" value="1"[#if AUTODONE="1"#] checked[#endif#] data-role="none"> Автозавершение по сроку</span>
-  </td>
- </tr>
-<tr>
-<td></td>
-<td valign="top" style="width: auto;">Срок:</td>
-</tr>
- <tr>
-  <td></td>
-  <td>
-  <label><input type="checkbox" name="is_nodate" id="is_nodate" value="1"[#if IS_NODATE="1"#] checked[#endif#] data-role="none"> Без срока</label>
-  <span id="show_date"[#if IS_NODATE="1"#] style="display:none"[#endif#]>
-  <label><input type="checkbox" name="all_day" id="all_day" value="1"[#if ALL_DAY="1"#] checked[#endif#] data-role="none"> Весь день</label>
-  <label><input type="checkbox" name="is_repeating" id="is_repeating" value="1"[#if IS_REPEATING="1"#] checked[#endif#] data-role="none"> С повторами</label></span>
-  </td>
-
- </tr>
-
-<tr>
-<td></td>
-<td>
-<input type="hidden" id="due" name="due" value="[#DUE#]" />
-<input type="hidden" id="end_time" name="end_time" value="[#END_TIME#]" />
-<div class="datetimepickers" id="dtps" [#if ALL_DAY="0" && IS_NODATE="0"#] style="display:block"[#else#] style="display:none"[#endif#]>
-  <div class="col-xs-2">
-        <div class="form-group">
-            <div class="input-group date" id="st_time">
-                <input type="text" class="form-control"/>
-                <span class="input-group-addon">
-                    <i class="glyphicon glyphicon-calendar"></i>
-                </span>
-            </div>
-       </div>
-  </div>
-  <div class="col-xs-2">
-            <div class="input-group date" id="en_time">
-                <input type="text" class="form-control"/>
-                <span class="input-group-addon">
-                    <i class="glyphicon glyphicon-calendar"></i>
-                </span>
-            </div>
-  </div>
+<div class="row" style="margin-top: 15px;">
+	<div class="col-xs-12 col-sm-6 col-md-6 col-12" style="background: #f7f7f9;border-left: 1px solid #e1e1e8;border-right: 1px solid #e1e1e8;border-bottom: 1px solid #e1e1e8;padding: 5px 0px;">
+	Наименование:	
+	</div>
 </div>
-<script type="text/javascript">
-    $(function () {
-        // инициализация 
-        $("#en_time").datetimepicker({
-            locale: "ru",sideBySide:true, useCurrent: false, minDate: "[#DUE#]", defaultDate: "[#END_TIME#]"
-        });
-        $("#st_time").datetimepicker({
-          locale: "ru",sideBySide:true, defaultDate: "[#DUE#]"
-        });
-        $("#st_time").on("dp.change", function (e) {
-            
-            document.getElementById('due').value = moment(e.date).format('YYYY-MM-DD HH:mm:ss');
-            //
-            if(e.date>$('#en_time').data("DateTimePicker").date()){
-              $('#en_time').data("DateTimePicker").date(e.date);
-            }
-            //check remind time only for absolut time         
-            if(e.date<$('#dps_remind').data("DateTimePicker").date()){
-              $('#dps_remind').data("DateTimePicker").date(e.date);
-              $('#dps_remind').data("DateTimePicker").maxDate($('#en_time').data("DateTimePicker").date());//max time for remind
-            }
-            //установим минимум выбора даты конца 
-            $('#en_time').data("DateTimePicker").minDate(e.date);
-        });
-        $("#en_time").on("dp.change", function (e) {
-           document.getElementById('end_time').value = moment(e.date).format('YYYY-MM-DD HH:mm:ss');
-           if(e.date<$('#dps_remind').data("DateTimePicker").date()){
-              $('#dps_remind').data("DateTimePicker").date(e.date);
-              $('#dps_remind').data("DateTimePicker").maxDate(e.date);//max time for remind
-            }
-        });
-    });
-</script>
-</td>
- </tr>
-<tr>
-<td>
-</td>
-<td>
-<div class="datepickers" id="dps" [#if ALL_DAY="1" && IS_NODATE="0"#] style="display:block"[#else#] style="display:none"[#endif#]>
-  <div class="col-xs-2">
-        <div class="form-group">
-            <div class="input-group date" id="st_time1">
-                <input type="text" class="form-control"/>
-                <span class="input-group-addon">
-                    <i class="glyphicon glyphicon-calendar"></i>
-                </span>
-            </div>
-       </div>
-  </div>
-  <div class="col-xs-2">
-            <div class="input-group date" id="en_time1">
-                <input type="text" class="form-control"/>
-                <span class="input-group-addon">
-                    <i class="glyphicon glyphicon-calendar"></i>
-                </span>
-            </div>
-  </div>
+<div class="row">
+	<div class="col-xs-12 col-sm-6 col-md-6 col-12" style="border-left: 1px solid #e1e1e8;border-right: 1px solid #e1e1e8;border-bottom: 1px solid #e1e1e8;padding: 5px 0px;">
+		<input autofocus placeholder="Новая задача/событие" style="padding: 5px;font-size: 20px;border: 0px;outline: none;box-shadow: 0 0 black;" class="form-control" type="input" name="title" value="[#TITLE#]" >
+	</div>
 </div>
-<script type="text/javascript">
-    $(function () {
-        // инициализация 
-        $("#en_time1").datetimepicker({
-            locale: "ru", useCurrent: false, minDate: moment("[#DUE#]","YYYY-MM-DD HH:mm:ss"), defaultDate: moment("[#END_TIME#]","YYYY-MM-DD HH:mm:ss"),format: "DD.MM.YYYY"
-        });
-        $("#st_time1").datetimepicker({
-          locale: "ru", defaultDate: moment("[#DUE#]","YYYY-MM-DD HH:mm:ss"),format: "DD.MM.YYYY"
-        });
-        $("#st_time1").on("dp.change", function (e) {
-            
-            document.getElementById('due').value = moment(e.date).format('YYYY-MM-DD HH:mm:ss');
-       
-            if(e.date>$('#en_time1').data("DateTimePicker").date()){
-              $('#en_time1').data("DateTimePicker").date(e.date);
-            }
-            //check remind time          
-            if(e.date<$('#dps_remind').data("DateTimePicker").date()){
-              $('#dps_remind').data("DateTimePicker").date(e.date);
-              $('#dps_remind').data("DateTimePicker").maxDate($('#en_time1').data("DateTimePicker").date());//max time for remind
-            }
-            //установим минимум выбора даты конца 
-            $('#en_time1').data("DateTimePicker").minDate(e.date);
-            
-
-        });
-        $("#en_time1").on("dp.change", function (e) {
-           document.getElementById('end_time').value = moment(e.date).format('YYYY-MM-DD HH:mm:ss');
-           if(e.date<$('#dps_remind').data("DateTimePicker").date()){
-              $('#dps_remind').data("DateTimePicker").date(e.date);
-              $('#dps_remind').data("DateTimePicker").maxDate(e.date);//max time for remind
-        });
-    });
-</script>
-
-</td>
-</tr>
-<tr>
-<td valign="top">
-</td>
-  <td valign="top">
-<div id="repeat_type_block"[#if IS_REPEATING!="1"#] style="display:none"[#endif#]>
-   <span id="every_lbl" style="font-size:18px">Повторять [#if REPEAT_TYPE="6"#]каждую[#else#] каждый[#endif#]</span>
-   <input type="text" size="1" class="box" name="repeat_in" value="[#REPEAT_IN#][#if REPEAT_IN=""#]1[#endif#]">
-   <select style="width: auto;" class="box" name="repeat_type" id="repeat_type" data-role="none">
-    <option value="1"[#if REPEAT_TYPE="1"#] selected[#endif#]>год
-    <option value="2"[#if REPEAT_TYPE="2"#] selected[#endif#]>месяц
-    <option value="3"[#if REPEAT_TYPE="3"#] selected[#endif#]>день недели
-    <option value="4"[#if REPEAT_TYPE="4"#] selected[#endif#]>день
-    <option value="5"[#if REPEAT_TYPE="5"#] selected[#endif#]>час
-    <option value="6"[#if REPEAT_TYPE="6"#] selected[#endif#]>минуту
-   </select>
-
-  <div id="restore_weekly_block" [#if REPEAT_TYPE!="3"#] style="display:none"[#endif#]>
-[#begin WDAYS#]
- 			<input type="checkbox" name="week_days[]" value="[#VALUE#]"[#if SELECTED="1"#] checked[#endif#]>[#DNAME#] 
-[#end WDAYS#]
-  </div>
+<div class="row" style="margin-top: 15px;">
+	<div class="col-xs-12 col-sm-6 col-md-6 col-12" style="padding: 5px 0px;">
+	    <ul class="nav nav-tabs" style="font-size: 12px;" id="tabs_pane">
+	      <li class="active">
+	        <a data-toggle="tab" href="#tab_main">Основное</a>
+	      </li>
+	      <li>
+	        <a data-toggle="tab" href="#tab_details">Детали</a>
+	      </li>
+	      <li>
+	        <a data-toggle="tab" href="#tab_repeat"><i class="glyphicon glyphicon-repeat"></i>Повторы</a>
+	      </li>
+	      <li>
+	        <a data-toggle="tab" href="#tab_remind"><i  class="glyphicon glyphicon-bell"></i>Напомнить</a>
+	      </li>
+	      <li>
+	        <a data-toggle="tab" href="#tab_ierarhy">Иерархия</a>
+	      </li>
+		</ul>
+	</div>
 </div>
-</td>
-</tr>
-<tr>
-<td></td>
-<td valign="top" style="width: auto;">&nbsp;</td>
-</tr>
-<tr>
-  <td></td>
-  <td valign="top">
-  <label><input type="checkbox" name="is_remind" id="is_remind" value="1" [#if IS_REMIND="1"#] checked[#endif#] data-role="none">Напомнить</label>
-  </td>
-</tr>
 
-<tr>
-<td colspan="2">
-<div id="remind_details" style="width: 100%; [#if IS_REMIND!="1"#]display:none[#endif#]">
-<table width="100%" border="0">
+<div class="tab-content">
+<div class="tab-pane fade in active" id="tab_main"> 
+<h4>Выбор типа, категории, времени начала/конца</h4>
+<div class="row" style="margin-top: 15px;">
 
-<tr>
- <td valign="top" style="width: 0%;"></td>
- <td>
- <div>
-
-   <select name="remind_timer" id="remind_timer" class="box">
-    <option value="0"[#if REMIND_TIMER="0"#] selected[#endif#]>за 5 минут
-    <option value="1"[#if REMIND_TIMER="1"#] selected[#endif#]>за 15 минут
-    <option value="2"[#if REMIND_TIMER="2"#] selected[#endif#]>за 30 минут
-    <option value="3"[#if REMIND_TIMER="3"#] selected[#endif#]>за 45 минут
-    <option value="4"[#if REMIND_TIMER="4"#] selected[#endif#]>за 1 час
-    <option value="5"[#if REMIND_TIMER="5"#] selected[#endif#]>за 2 часа
-    <option value="6"[#if REMIND_TIMER="6"#] selected[#endif#]>за 8 часов
-    <option value="7"[#if REMIND_TIMER="7"#] selected[#endif#]>за 12 часов
-    <option value="8"[#if REMIND_TIMER="8"#] selected[#endif#]>за 1 день
-    <option value="9"[#if REMIND_TIMER="9"#] selected[#endif#]>за 2 дня
-    <option value="10"[#if REMIND_TIMER="10"#] selected[#endif#]>в назначенное время
-   </select>
-</div> 
- </td>
-</tr>
-<tr><td></td></tr>
-<td></td>
-<td>
-<input type="hidden" class="form-control" id="remind_time" name="remind_time" value="[#REMIND_TIME#]">
-<div class="col-xs-2" id="dps_remind_block" [#if REMIND_TIMER="10"#] style="display:block"[#else#] style="display:none"[#endif#]> 
-        <div class="form-group">
-            <div class="input-group date" id="dps_remind">
-                <input type="text" class="form-control"/>
-                <span class="input-group-addon">
-                    <i class="glyphicon glyphicon-calendar"></i>
-                </span>
-            </div>
-       </div>
+	<div class="col-xs-12 col-sm-6 col-md-6 col-12" style="background: #f7f7f9;border-right: 1px solid #e1e1e8;border-top: 1px solid #e1e1e8;border-bottom: 1px solid #e1e1e8;padding: 5px;">
+		<label style="margin-bottom: 0px;font-weight: normal;">
+			<input style="margin: 0px;" type="radio" name="is_task" id="is_event" value="0"[#if IS_TASK!="1"#] checked[#endif#] data-role="none"> Событие
+		</label>
+		<label style="margin-bottom: 0px;font-weight: normal">
+			<input style="margin: 0px;" type="radio" name="is_task" id="is_task" value="1"[#if IS_TASK="1"#] checked[#endif#] data-role="none"> Задача
+		</label>
+		<span id="task_done_block"[#if IS_TASK!="1"#] style="display:none"[#endif#]>
+			<i class="glyphicon glyphicon-resize-horizontal" style="padding: 0px 10px;color: gray;"></i>
+			<label style="margin-bottom: 0px;font-weight: normal"><input style="margin: 0px;vertical-align: middle;" type="checkbox" name="is_done" value="1"[#if IS_DONE="1"#] checked[#endif#] data-role="none"> Готово</label>
+		</span>
+		<span id="autodone_block"[#if IS_NODATE="1" || IS_TASK!="1"#] style="display:none"[#endif#]> 
+			<input style="margin: 0px;vertical-align: middle;" type="checkbox" name="autodone" value="1"[#if AUTODONE="1"#] checked[#endif#] data-role="none"> Автозавершение по сроку
+		</span>
+	</div>
 </div>
-<script type="text/javascript">
-    $(function () {
-        // инициализация 
-        $("#dps_remind").datetimepicker({
-            locale: "ru" ,sideBySide:true, defaultDate: moment(document.getElementById('remind_time').value,"YYYY-MM-DD HH:mm:ss"),maxDate: moment(document.getElementById('due').value,"YYYY-MM-DD HH:mm:ss")
-        });
-        $("#dps_remind").on("dp.change", function (e) {
-           document.getElementById('remind_time').value = moment(e.date).format('YYYY-MM-DD HH:mm:ss');
-        });
-    });
-</script>
 
-</td>
-</tr>
-<tr>
-<td></td>
- <td>
-  <label><input type="radio" name="remind_type" id="sayto" value="0" [#if REMIND_TYPE="0"#] checked[#endif#] data-role="none"> Сказать</label>
-  <label><input type="radio" name="remind_type" id="docode" value="1"[#if REMIND_TYPE="1"#] checked[#endif#] data-role="none"> Выполнить код</label>
- </td>
-</tr>
-<tr>
-<td></td>
-<td valign="top" style="width: auto;">
-<span id="remind_code_block"[#if REMIND_TYPE!="1"#] style="display:none"[#endif#]>
-<textarea style="width: auto;" class="form-control" id="remind_code" name="remind_code" cols="40" rows="4">[#REMIND_CODE#]</textarea>
-</span>
-</td>
-
-</tr>
-</table>
+<div class="row" style="margin-top: 15px;">
+		<div class="col-xs-12 col-sm-6 col-md-6 col-12" style="background: #f7f7f9;border-right: 1px solid #e1e1e8;border-top: 1px solid #e1e1e8;border-bottom: 1px solid #e1e1e8;padding: 5px;">
+			Категория задачи/события:
+		</div>
 </div>
-</td>
-</tr>
+<div class="row">
+		<div class="col-xs-12 col-sm-6 col-md-6 col-12" style="border-left: 1px solid #e1e1e8;border-right: 1px solid #e1e1e8;border-bottom: 1px solid #e1e1e8;padding: 5px 0px;">
+		<select name="calendar_category_id" style="padding: 5px;font-size: 20px;border: 0px;outline: none;box-shadow: 0 0 black;font-style: normal;">
+			<option value="0">Без категории
+			[#begin CALENDAR_CATEGORIES#]
+			<option value="[#ID#]" [#if ID="<#CALENDAR_CATEGORY_ID#>"#] selected[#endif#]>[#TITLE#]
+			[#end CALENDAR_CATEGORIES#]
+		</select>
+	</div>
 
-<tr>
-  <td></td>
-  <td valign="top">
-   <label class="box" name="advanced" id="advanced" onClick="toggle_show('advanced_details')"> &nbsp;&nbsp;Детали&nbsp;&nbsp;</label>
-  </td>
-</tr>
-
-<tr>
-<td colspan="2">
-<div id="advanced_details" style="width: 100%;display:none">
-<table width="100%" border="0">
-<tr>
-<td></td>
-<td>Заметки:</td>
-</tr>
- <tr>
-  <td></td>
-  <td valign="top" style="width: auto;">
-  <textarea style="width: auto;" class="form-control" name="notes" cols="40" rows="3">[#NOTES#]</textarea>
-</td>
-</tr>
-<tr>
-<td></td>
-<td>Пользователь:</td>
-</tr>
-<tr>
-  <td></td>
-  <td valign="top">
-  <select style="width: auto;" class="box" name="user_id">
-   <option value="0">Любой
-   [#begin USERS#]
-   <option value="[#ID#]"[#if ID="<#USER_ID#>"#] selected[#endif#]>[#NAME#]
-   [#end USERS#]
-  </select>
-  </td>
- </tr>
-<tr>
-<td></td>
-<td><#LANG_RUN_SCRIPT#>:</td>
-</tr>
- <tr>
-  <td></td>
-  <td>
-   <select style="width: auto;" class="box" name="done_script_id">
-    <option value="0">
-    [#begin SCRIPTS#]
-    <option value="[#ID#]"[#if ID="<#DONE_SCRIPT_ID#>"#] selected[#endif#]>[#TITLE#]
-    [#end SCRIPTS#]
-   </select>
-   (<#LANG_WHEN_TASK_WILL_BE_DONE#>)
-  </td>
- </tr>
-<tr>
-<td></td>
-<td>Выполнить код:</td>
-</tr>
- <tr>
-  <td></td>
-  <td valign="top" style="width: auto;">
-  <textarea style="width: auto;" class="form-control" name="done_code" cols="40" rows="3">[#DONE_CODE#]</textarea>
-</td>
- </tr>
-</table>
 </div>
-</td>
-</tr>
 
-<tr>
-  <td valign="top"></td>
-  <td valign="top">
-  <label class="box" name="hierarchy" id="hierarchy" onClick="toggle_show('hierarchy_details')"> &nbsp;&nbsp;Иерархия&nbsp;&nbsp;</label>
-  </td>
-</tr>
-<tr> 
-<td colspan="2">
-<div id="hierarchy_details" style="width: 100%;display:none">
-<table width="100%" border="0">
-<tr>
-<td>Главная задача:</td>
-</tr>
- <tr>
-  <td valign="top" style="width: auto;">
+<div class="row" style="margin-top: 15px;">
+	<div class="col-xs-12 col-sm-6 col-md-6 col-12" style="background: #f7f7f9;border-right: 1px solid #e1e1e8;border-top: 1px solid #e1e1e8;border-bottom: 1px solid #e1e1e8;padding: 5px;">
+		Сроки для задачи:
+	</div>
+</div>
+<div class="row">
+	<div class="col-xs-12 col-sm-6 col-md-6 col-12" style="border-left: 1px solid #e1e1e8;border-right: 1px solid #e1e1e8;border-bottom: 1px solid #e1e1e8;padding: 5px 0px;">
+		<label style="margin-bottom: 0px;font-weight: normal;">
+			<input style="margin: 0;vertical-align: middle;" type="checkbox" name="is_nodate" id="is_nodate" value="1"[#if IS_NODATE="1"#] checked[#endif#] data-role="none"> Бессрочная
+		</label>
+		<span id="show_date"[#if IS_NODATE="1"#] style="display:none"[#endif#]>
+			<label style="margin-bottom: 0px;font-weight: normal;">
+				<input style="margin: 0;vertical-align: middle;" type="checkbox" name="all_day" id="all_day" value="1"[#if ALL_DAY="1"#] checked[#endif#] data-role="none"> Весь день
+			</label>
+		</span>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-12 col-sm-6 col-md-6 col-12" style="border-left: 1px solid #e1e1e8;border-right: 1px solid #e1e1e8;border-bottom: 1px solid #e1e1e8;padding: 10px;">
+		<input type="hidden" class="form-control" id="due" name="due" value="[#DUE#]" />
+		<input type="hidden" class="form-control" id="end_time" name="end_time" value="[#END_TIME#]" />
+		
+		<div id="timeAlertForever" class="alert alert-success text-center" role="alert" style="[#if IS_NODATE!="1"#]display: none;[#endif#]background-color: #f8fff5;">
+			<i class="glyphicon glyphicon-time"></i> Задача выполняется бессрочно.
+		</div>
+		
+		<div class="datetimepickers" id="dtps" [#if ALL_DAY="0" && IS_NODATE="0"#] style="display:block"[#else#] style="display:none"[#endif#]>
+			<div class="col-12">
+				<span style="font-style: italic;">Выполняется начиная с <i class="glyphicon glyphicon-share-alt" style="transform: rotate(60deg);margin-left: 5px;"></i></span>
+			</div>
+			<div class="col-10 col-md-offset-2">
+				<div class="input-group date" id="st_time">
+					<input type="text" class="form-control"/>
+					<span class="input-group-addon">
+						<i class="glyphicon glyphicon-calendar"></i>
+					</span>
+			   </div>
+			</div>
+			<div class="col-12">
+				<span style="font-style: italic;">Выполняется по <i class="glyphicon glyphicon-share-alt" style="transform: rotate(60deg);margin-left: 5px;"></i></span>
+			</div>
+			<div class="col-10 col-md-offset-2">
+				<div class="input-group date" id="en_time">
+					<input type="text" class="form-control"/>
+					<span class="input-group-addon">
+						<i class="glyphicon glyphicon-calendar"></i>
+					</span>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+		$(function () {
+			// инициализация 
+			$("#en_time").datetimepicker({
+				locale: "ru",sideBySide:true, useCurrent: false, minDate: "[#DUE#]", defaultDate: "[#END_TIME#]"
+			});
+			$("#st_time").datetimepicker({
+			  locale: "ru",sideBySide:true, defaultDate: "[#DUE#]"
+			});
+			$("#st_time").on("dp.change", function (e) {
+				document.getElementById('due').value = moment(e.date).format('YYYY-MM-DD HH:mm:ss');
+				if(e.date>$('#en_time').data("DateTimePicker").date()){
+			$('#en_time').data("DateTimePicker").date(e.date);
+				}
+				//check remind time only for absolut time      
+				/*   
+				if(e.date<$('#dps_remind').data("DateTimePicker").date()){
+					//$('#dps_remind').data("DateTimePicker").date(e.date);
+					//$('#dps_remind').data("DateTimePicker").maxDate($('#en_time').data("DateTimePicker").date());//max time for remind
+					alert("Проверьте напоминание!");
+				}
+				*/
+				//установим минимум выбора даты конца 
+				$('#en_time').data("DateTimePicker").minDate(e.date);
+			});
+			$("#en_time").on("dp.change", function (e) {
+				document.getElementById('end_time').value = moment(e.date).format('YYYY-MM-DD HH:mm:ss');
+				/*
+				if(e.date<$('#dps_remind').data("DateTimePicker").date()){
+					//$('#dps_remind').data("DateTimePicker").date(e.date);
+					//$('#dps_remind').data("DateTimePicker").maxDate(e.date);//max time for remind
+				}
+				*/
+			});
+		});
+		</script>
+		
+		<div class="datepickers" id="dps" [#if ALL_DAY="1" && IS_NODATE="0"#] style="display:block"[#else#] style="display:none"[#endif#]>
+			<div class="col-12">
+				<span style="font-style: italic;">Выполняется начиная с <i class="glyphicon glyphicon-share-alt" style="transform: rotate(60deg);margin-left: 5px;"></i></span>
+			</div>
+			<div class="col-10 col-md-offset-2">
+				<div class="input-group date" id="st_time1">
+					<input type="text" class="form-control"/>
+					<span class="input-group-addon">
+						<i class="glyphicon glyphicon-calendar"></i>
+					</span>
+				</div>
+			</div>
+			<div class="col-12">
+				<span style="font-style: italic;">Выполняется по <i class="glyphicon glyphicon-share-alt" style="transform: rotate(60deg);margin-left: 5px;"></i></span>
+			</div>
+			<div class="col-10 col-md-offset-2">
+				<div class="input-group date" id="en_time1">
+					<input type="text" class="form-control"/>
+					<span class="input-group-addon">
+						<i class="glyphicon glyphicon-calendar"></i>
+					</span>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+		$(function () {
+			// инициализация 
+			$("#en_time1").datetimepicker({
+				locale: "ru", useCurrent: false, minDate: moment("[#DUE#]","YYYY-MM-DD HH:mm:ss"), defaultDate: moment("[#END_TIME#]","YYYY-MM-DD HH:mm:ss"),format: "DD.MM.YYYY"
+			});
+			$("#st_time1").datetimepicker({
+			  locale: "ru", defaultDate: moment("[#DUE#]","YYYY-MM-DD HH:mm:ss"),format: "DD.MM.YYYY"
+			});
+			$("#st_time1").on("dp.change", function (e) {
+				document.getElementById('due').value = moment(e.date).format('YYYY-MM-DD HH:mm:ss');
+				if(e.date>$('#en_time1').data("DateTimePicker").date()){
+					$('#en_time1').data("DateTimePicker").date(e.date);
+				}
+/*
+				//check remind time		  
+				if(e.date<$('#dps_remind').data("DateTimePicker").date()){
+					$('#dps_remind').data("DateTimePicker").date(e.date);
+					$('#dps_remind').data("DateTimePicker").maxDate($('#en_time1').data("DateTimePicker").date());//max time for remind
+				}
+*/
+				//установим минимум выбора даты конца 
+				$('#en_time1').data("DateTimePicker").minDate(e.date);
+			});
+
+			$("#en_time1").on("dp.change", function (e) {
+			   document.getElementById('end_time').value = moment(e.date).format('YYYY-MM-DD HH:mm:ss');
+			/*
+			   if(e.date<$('#dps_remind').data("DateTimePicker").date()){
+					$('#dps_remind').data("DateTimePicker").date(e.date);
+					$('#dps_remind').data("DateTimePicker").maxDate(e.date);//max time for remind
+			   }
+			*/
+		    });
+
+		});
+		</script>
+
+	</div>
+</div>
+
+</div>
+<div class="tab-pane fade" id="tab_details"> 
+	<div id="advanced_detais">
+	<h4>Заметки, код, привязанный к задаче/событию, пользователю</h4>
+		<div class="row" style="margin-top: 15px;">
+				<div class="col-xs-12 col-sm-6 col-md-6 col-12" style="background: #f7f7f9;border-right: 1px solid #e1e1e8;border-top: 1px solid #e1e1e8;border-bottom: 1px solid #e1e1e8;padding: 5px;">
+					Детали :
+				</div>
+		</div>
+		<div class="row">
+				<div class="col-xs-12 col-sm-6 col-md-6 col-12" style="border-left: 1px solid #e1e1e8;border-right: 1px solid #e1e1e8;border-bottom: 1px solid #e1e1e8;padding: 5px 0px;">
+				<textarea style="height: auto;" class="form-control" name="notes" cols="40" rows="3">[#NOTES#]</textarea>
+				</div>
+		</div>
+		<div class="row" style="margin-top: 15px;">
+				<div class="col-xs-12 col-sm-6 col-md-6 col-12" style="background: #f7f7f9;border-right: 1px solid #e1e1e8;border-top: 1px solid #e1e1e8;border-bottom: 1px solid #e1e1e8;padding: 5px;">
+					Пользователь:
+				</div>
+		</div>
+		<div class="row"> 
+			<div class="col-xs-12 col-sm-6 col-md-6 col-12" style="border-left: 1px solid #e1e1e8;border-right: 1px solid #e1e1e8;border-bottom: 1px solid #e1e1e8;padding: 5px 0px;">
+			<select style="width: 100%;" class="form-control" name="user_id">
+				<option value="0"><#LANG_ANY_USER#>
+				[#begin USERS#]
+				<option value="[#ID#]"[#if ID="<#USER_ID#>"#] selected[#endif#]>[#NAME#]
+				[#end USERS#]
+			</select>
+			</div>
+		</div>
+		<div class="row" style="margin-top: 15px;">
+				<div class="col-xs-12 col-sm-6 col-md-6 col-12" style="background: #f7f7f9;border-right: 1px solid #e1e1e8;border-top: 1px solid #e1e1e8;border-bottom: 1px solid #e1e1e8;padding: 5px;">
+					<span><#LANG_RUN_SCRIPT#> <#LANG_WHEN_TASK_WILL_BE_DONE#></span>
+				</div>
+		</div>
+		<div class="row"> 
+			<div class="col-xs-12 col-sm-6 col-md-6 col-12" style="border-left: 1px solid #e1e1e8;border-right: 1px solid #e1e1e8;border-bottom: 1px solid #e1e1e8;padding: 5px 0px;">
+					<select style="width: 100%;" class="form-control" name="done_script_id">
+						<option value="0">
+						[#begin SCRIPTS#]
+						<option value="[#ID#]"[#if ID="<#DONE_SCRIPT_ID#>"#] selected[#endif#]>[#TITLE#]
+						[#end SCRIPTS#]
+					</select>
+			</div>
+		</div>
+		<div class="row" style="margin-top: 15px;">
+				<div class="col-xs-12 col-sm-6 col-md-6 col-12" style="background: #f7f7f9;border-right: 1px solid #e1e1e8;border-top: 1px solid #e1e1e8;border-bottom: 1px solid #e1e1e8;padding: 5px;">
+					<span>или Выполнить код <#LANG_WHEN_TASK_WILL_BE_DONE#></span>
+				</div>
+		</div>
+		<div class="row">
+				<div class="col-xs-12 col-sm-6 col-md-6 col-12" style="border-left: 1px solid #e1e1e8;border-right: 1px solid #e1e1e8;border-bottom: 1px solid #e1e1e8;padding: 5px 0px;">
+				<textarea style="height: auto;" class="form-control" name="done_code" cols="40" rows="3">[#DONE_CODE#]</textarea>
+				</div>
+		</div>
+	</div>
+
+</div>
+<div class="tab-pane fade" id="tab_repeat"> 
+
+<div style="margin-left: 15px;">
+		<h4><span id="repeatInfo">
+		[#if IS_NODATE = "1"#]
+		<i class="glyphicon glyphicon-repeat" style="color: orange;"></i> Повторение недоступно - задача бессрочная
+		[#else#]
+		[#if IS_REPEATING = "1"#]
+		<i class="glyphicon glyphicon-repeat" style="color: green;"></i> Включено повторение задачи <i class="glyphicon glyphicon-share-alt" style="transform: );margin-left: 5px;"></i>
+		[#else#]
+		<i class="glyphicon glyphicon-repeat" style="color: #f66161;"></i> Не повторять задачу
+		[#endif IS_REPEATING#]
+		[#endif IS_NODATE#]
+		</span></h4>
+</div>
+
+		<span id="show_date1"[#if IS_NODATE="1"#] style="display:none"[#endif#]>
+			<label style="margin-bottom: 0px;font-weight: normal;">
+				<input style="margin: 0;vertical-align: middle;" type="checkbox" name="is_repeating" id="is_repeating" value="1"[#if IS_REPEATING="1"#] checked[#endif#] data-role="none"> Повторять
+			</label>
+		</span>
  
-   <select style="width: auto;" class="box" name="parent_id">
-    <option value="0">нет главной задачи
-    [#begin FOR_LINKED_TASKS#]
-    <option value="[#ID#]"[#if ID="<#PARENT_ID#>"#] selected[#endif#]>&nbsp;&nbsp;[#TITLE#]
-    [#end FOR_LINKED_TASKS#]
-   </select>
+<div id="repeat_type_block"[#if IS_REPEATING!="1"#] style="display:none"[#endif#]>
+	<div class="col-11 col-md-offset-1">
+		<span id="every_lbl">Повторять [#if REPEAT_TYPE="6"#]каждую[#else#] каждый[#endif#]</span>
+		<input type="text" size="1" style="padding: 5px;border: 0px;outline: none;box-shadow: 0 0 black;border-bottom: 1px solid darkgrey;text-align: center;" id="repeat_in" name="repeat_in" value="[#if REPEAT_IN="0"#]1[#else#][#REPEAT_IN#][#endif#]">
+		<i class="glyphicon glyphicon-arrow-right" style="color: darkgrey"></i>
+		<select name="repeat_type" id="repeat_type" data-role="none" style="padding: 5px;border: 0px;outline: none;box-shadow: 0 0 black;font-style: normal;">
+			<option value="1"[#if REPEAT_TYPE="1"#] selected[#endif#]>год
+			<option value="2"[#if REPEAT_TYPE="2"#] selected[#endif#]>месяц
+			<option value="3"[#if REPEAT_TYPE="3"#] selected[#endif#]>день недели
+			<option value="4"[#if REPEAT_TYPE="4"#] selected[#endif#]>день
+			<option value="5"[#if REPEAT_TYPE="5"#] selected[#endif#]>час
+			<option value="6"[#if REPEAT_TYPE="6"#] selected[#endif#]>минуту
+		</select>
 
-</td>
-</tr>
-<tr>
-<td></td>
-</tr>
-<tr>
- <td valign="top">
-  <label><input type="checkbox" name="autodone_by_childs" id="autodone_by_childs" value="1" [#if AUTODONE_BY_CHILDS="1"#] checked[#endif#] data-role="none"> Готово при завершении всех подчиненных</label>
-</tr>
-<tr>
-<td>
-</td>
-</tr>
- [#if OTHERS_REC_COUNT>0#]
- [#begin OTHERS#]
-<tr>
-  <td valign="top" style="width: 20%;">
- [#if IS_DONE="1"#]<strike>[#endif#][#TITLE#][#if IS_DONE="1"#]</strike>[#endif#]</td><td><a href="?view_mode=edit&id=[#ID#]"><img style="height: 20px;" src="../cms/calendar/settings.png" /></a>
-</td>
-</tr>
-[#end OTHERS#]
-[#endif#]
-</table>
+		<div id="restore_weekly_block" [#if REPEAT_TYPE!="3"#] style="display:none"[#endif#]>
+			[#begin WDAYS#]
+                <label class="form-check-inline">
+                <input class="form-check-input" type="checkbox" name="week_days[]" value="[#VALUE#]"[#if SELECTED="1"#] checked[#endif#]>[#DNAME#] 
+                </label>
+			[#end WDAYS#]
+		</div>
+	</div>
+
 </div>
-</td>
-</tr>
 
- <tr>
-  <td></td>
-  <td valign="top"><input style="margin-top: 20px;" class="btn btn-default" type="submit" name="submit" value="<#LANG_SUBMIT#>">
-  <a style="margin-top: 20px;" class="btn btn-default" href="?"><#LANG_CANCEL#></a>
-  [#if ID!=""#]
-   <a style="margin-top: 20px;" class="btn btn-default" href="?view_mode=<#VIEW_MODE#>&id=<#ID#>&mode=delete" onClick="return confirm('<#LANG_ARE_YOU_SURE#>');"><#LANG_DELETE#></a>
-  [#endif ID#]
-  </td>
- </tr>
- <input type="hidden" name="view_mode" value="<#VIEW_MODE#>">
- <input type="hidden" name="mode" value="update">
- <input type="hidden" name="id" value="<#ID#>">
-</table>
+</div>
+<div class="tab-pane fade" id="tab_remind"> 
+	<div style="margin-left: 15px;">
+		<h4><span id="remindMeInfo"><i class="glyphicon glyphicon-bell" style="color: #f66161;"></i> Напоминания нет</span></h4>
+	</div>
+		<div class="row" style="margin-top: 15px;">
+				<div class="col-xs-12 col-sm-6 col-md-6 col-12" style="background: #f7f7f9;border-right: 1px solid #e1e1e8;border-top: 1px solid #e1e1e8;border-bottom: 1px solid #e1e1e8;padding: 5px;">
+					<label style="margin-bottom: 0px;font-weight:20 px;" ><input type="checkbox" style="margin: 0px;vertical-align: middle;" name="is_remind" id="is_remind" value="1"[#if IS_REMIND="1"#] checked[#endif#] data-role="none"> - Напомнить?</label>
+				</div>
+		</div>
+	<div  id="remind_details" style="width: 100%;[#if IS_REMIND!="1"#]display:none[#endif#]">
+		<div class="row"> 
+			<div class="col-xs-12 col-sm-6 col-md-6 col-12" style="border-left: 1px solid #e1e1e8;border-right: 1px solid #e1e1e8;border-bottom: 1px solid #e1e1e8;padding: 5px 0px;">
+					<div>
+						Напомнить о задаче 
+						<select name="remind_timer" id="remind_timer" style="padding: 5px;border: 0px;outline: none;box-shadow: 0 0 black;font-style: normal;">
+							<option value="0"[#if REMIND_TIMER="0"#] selected[#endif#]>за 5 минут
+							<option value="1"[#if REMIND_TIMER="1"#] selected[#endif#]>за 15 минут
+							<option value="2"[#if REMIND_TIMER="2"#] selected[#endif#]>за 30 минут
+							<option value="3"[#if REMIND_TIMER="3"#] selected[#endif#]>за 45 минут
+							<option value="4"[#if REMIND_TIMER="4"#] selected[#endif#]>за 1 час
+							<option value="5"[#if REMIND_TIMER="5"#] selected[#endif#]>за 2 часа
+							<option value="6"[#if REMIND_TIMER="6"#] selected[#endif#]>за 8 часов
+							<option value="7"[#if REMIND_TIMER="7"#] selected[#endif#]>за 12 часов
+							<option value="8"[#if REMIND_TIMER="8"#] selected[#endif#]>за 1 день
+							<option value="9"[#if REMIND_TIMER="9"#] selected[#endif#]>за 2 дня
+							<option value="10"[#if REMIND_TIMER="10"#] selected[#endif#]>в назначенное время
+						</select>
+						<i class="glyphicon glyphicon-share-alt" style="transform: rotate(60deg);margin-left: 5px;"></i>
+					</div>
+					<input type="hidden" class="form-control" id="remind_time" name="remind_time" value="[#REMIND_TIME#]">
+			</div>
+		</div>
+
+		<div class="row"> 
+			<div id="dps_remind_block" [#if REMIND_TIMER="10"#] style="display:block"[#else#] style="display:none"[#endif#]>
+					<div class="col-xs-12 col-sm-6 col-md-6 col-12"  style="border-left: 1px solid #e1e1e8;border-right: 1px solid #e1e1e8;border-bottom: 1px solid #e1e1e8;padding: 5px 0px;"> 
+						<div class="col-10 col-md-offset-4">
+							<div class="form-group">
+								<div class="input-group date" id="dps_remind">
+									<input type="text" class="form-control"/>
+									<span class="input-group-addon">
+										<i class="glyphicon glyphicon-calendar"></i>
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
+			</div>
+					<script type="text/javascript">
+					$(function () {
+						// инициализация 
+						$("#dps_remind").datetimepicker({
+							locale: "ru" ,sideBySide:true, defaultDate: moment(document.getElementById('remind_time').value,"YYYY-MM-DD HH:mm:ss")
+							//,maxDate: moment(document.getElementById('end_time').value,"YYYY-MM-DD HH:mm:ss")
+						});
+						$("#dps_remind").on("dp.change", function (e) {
+							document.getElementById('remind_time').value = moment(e.date).format('YYYY-MM-DD HH:mm:ss');
+						});
+					});
+					</script>
+		</div>
+		<div class="row"> 
+			<div class="col-xs-12 col-sm-6 col-md-6 col-12" style="background: #f7f7f9;border-right: 1px solid #e1e1e8;border-top: 1px solid #e1e1e8;border-bottom: 1px solid #e1e1e8;padding: 5px;">
+				Как напомнить?
+			</div>
+		</div>
+		<div class="row"> 
+			<div class="col-xs-12 col-sm-6 col-md-6 col-12"  style="border-left: 1px solid #e1e1e8;border-right: 1px solid #e1e1e8;border-bottom: 1px solid #e1e1e8;padding: 5px 0px;"> 
+					<label style="margin-bottom: 0px;font-weight: normal;">
+						<input type="radio" name="remind_type" id="sayto" value="0"[#if REMIND_TYPE!="1"#] checked[#endif#] data-role="none"> Произнести напоминание или
+					</label>
+				  
+					<label style="margin-bottom: 0px;font-weight: normal;">
+						<input type="radio" name="remind_type" id="docode" value="1"[#if REMIND_TYPE="1"#] checked[#endif#] data-role="none"> Выполнить код
+					</label>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12 col-sm-6 col-md-6 col-12" style="border-left: 1px solid #e1e1e8;border-right: 1px solid #e1e1e8;border-bottom: 1px solid #e1e1e8;padding: 5px 0px;">
+					<span id="remind_code_block"[#if REMIND_TYPE!="1"#] style="display:none"[#endif#]>
+						<textarea style="width: 100%;height: auto;" class="form-control" id="remind_code" name="remind_code" cols="40" rows="4">[#REMIND_CODE#]</textarea>
+					</span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="tab-pane fade" id="tab_ierarhy"> 
+<h4>
+[#if OTHERS_REC_COUNT>0 && PARENT_ID="0"#]Задача имеет подзадачи (выполнено [#PROGRESS#] %)[#endif#]
+[#if PARENT_ID>0 && OTHERS_REC_COUNT="0"#]Подчиненная задача [#endif#]
+[#if OTHERS_REC_COUNT>0 && PARENT_ID>0#]Задача входит в сложную иерархию (выполнено [#PROGRESS#] %)[#endif#]
+[#if OTHERS_REC_COUNT="0" && PARENT_ID="0"#]Задача не входит в иерархию[#endif#]
+</h4>
+<div class="row" style="margin-top: 15px;">
+	<div class="col-xs-12 col-sm-6 col-md-16 col-12" style="background: #f7f7f9;border: 1px solid #e1e1e8;border-radius: 5px 0px 0px 0px;padding: 5px;">
+		Иерархия задач:
+	</div>
+</div>
+<div class="row">
+		<div class="col-xs-12 col-sm-6 col-md-6 col-12" style="border-left: 1px solid #e1e1e8;border-right: 1px solid #e1e1e8;border-bottom: 1px solid #e1e1e8;padding: 5px 0px;">
+			<div style="font-style: italic;">Главная задача:</div>
+				<div class="col-xs-12 col-sm-6 col-md-6 col-12">
+						<div class="col-11 col-md-offset-1">
+							<select  class="box" name="parent_id" style="padding: 5px;border: 0px;outline: none;box-shadow: 0 0 black;font-style: normal;">
+							<option value="0">нет главной задачи
+							[#begin FOR_LINKED_TASKS#]
+							<option value="[#ID#]"[#if ID="<#PARENT_ID#>"#] selected[#endif#]>&nbsp;&nbsp;[#TITLE#]
+							[#end FOR_LINKED_TASKS#]
+							</select>
+						</div>
+				</div>
+		</div>
+</div>
+
+<div class="row">
+		<div class="col-xs-12 col-sm-6 col-md-6 col-12" style="border-left: 1px solid #e1e1e8;border-right: 1px solid #e1e1e8;border-bottom: 1px solid #e1e1e8;padding: 5px 0px;">
+[#if OTHERS_REC_COUNT>0#]
+					<label style="margin-bottom: 0px;font-weight: normal;">
+					<input type="checkbox" name="autodone_by_childs" id="autodone_by_childs" value="1" [#if AUTODONE_BY_CHILDS="1"#] checked[#endif#] data-role="none"> Готово при завершении всех подчиненных
+					</label>
+[#endif#]
+		</div>
+</div>
+
+<div class="row" style="margin-top: 15px;">
+        [#if OTHERS_REC_COUNT>0#]
+		<div class="col-xs-12 col-sm-6 col-md-6 col-12"  style="border-left: 1px solid #e1e1e8;border-right: 1px solid #e1e1e8;border-bottom: 1px solid #e1e1e8;padding: 5px 0px;">
+					
+			<div style="font-style: italic;">Подчинённые задачи:</div>
+				<div class="col-xs-6 col-sm-6 col-md-6 col-12">
+					[#begin OTHERS#]
+					<a href="?view_mode=edit&id=[#ID#]">[#if IS_DONE="1"#]<strike>[#endif#]&nbsp;&nbsp;[#TITLE#][#if IS_DONE="1"#]</strike>[#endif#]</a><br>
+					[#end OTHERS#]
+					
+				</div>
+		</div>
+		[#endif#]
+</div>
+
+</div>
+
+</div>
+
+[#if LOG>""#]
+
+<div class="row" style="margin-top: 15px;">
+	<div class="col-xs-12 col-sm-6 col-md-6 col-12" style="background: #f7f7f9;border: 1px solid #e1e1e8;border-radius: 5px 0px 0px 0px;padding: 5px;">
+		Лог:
+	</div>
+</div>
+<div class="row">
+	<div class="col-xs-12 col-sm-6 col-md-6 col-12" style="border-left: 1px solid #e1e1e8;border-right: 1px solid #e1e1e8;border-bottom: 1px solid #e1e1e8;padding: 5px 0px;">
+		[#LOG#]
+	</div>
+</div>
+
+[#endif#]
+
+</div>
+<div class="clearfix"></div>
+		<div class="row">
+			<div class="col-xs-12 col-sm-12 col-md-12 col-12 text-left">
+				<input style="margin-top: 20px;" class="btn btn-success" type="submit" name="submit" value="<#LANG_SUBMIT#>">
+				<a style="margin-top: 20px;" class="btn btn-default" href="?"><#LANG_CANCEL#></a>
+				[#if ID!=""#]
+				<a style="margin-top: 20px;" class="btn btn-danger" role="button" href="?view_mode=<#VIEW_MODE#>&id=<#ID#>&mode=delete" onClick="return confirm('<#LANG_ARE_YOU_SURE#>');"><#LANG_DELETE#></a>
+				[#endif ID#]
+			</div>
+		
+		 <input type="hidden" name="view_mode" value="<#VIEW_MODE#>">
+		 <input type="hidden" name="mode" value="update">
+		 <input type="hidden" name="id" value="<#ID#>">
+		</div>
+</div>
 </form>
 </div>
-&nbsp;
-
-
 <script language="javascript">
 
  $('#is_task').click (function ()
@@ -466,12 +537,14 @@
   {
   var thisCheck = $(this);
   if (thisCheck.is(':checked')) {
+	$('#repeatInfo').html('<i class="glyphicon glyphicon-repeat" style="color: orange;"></i> Повторение недоступно - задача бессрочная');
+   $('#timeAlertForever').show();
    $('#show_date').hide();
+   $('#show_date1').hide();
    $('#autodone_block').hide();
    document.getElementById("dps").style.display="none";
    document.getElementById("dtps").style.display="none"; 
    $('#repeat_type_block').hide();
-//цикл todo
    $('#remind_timer option[value=0]').hide();
    $('#remind_timer option[value=1]').hide();
    $('#remind_timer option[value=2]').hide();
@@ -482,8 +555,15 @@
    $('#remind_timer option[value=7]').hide();
    $('#remind_timer option[value=8]').hide();
    $('#remind_timer option[value=9]').hide();
-   document.getElementById('remind_timer').value = 10;
-   $('#dps_remind_block').show();
+	document.getElementById('remind_timer').value = 10;
+	$("#all_day").removeAttr("checked");
+	$("#is_repeating").removeAttr("checked");
+//
+	$('#dps_remind').data("DateTimePicker").date(moment());
+	//$('#dps_remind').data("DateTimePicker").minDate(moment().add(-1,'days'));//min time for remind
+	//$('#dps_remind').data("DateTimePicker").maxDate(moment().add(1,'years')).format();//max time for remind
+
+	$('#dps_remind_block').show();
   } else {
    $('#remind_timer option[value=0]').show();
    $('#remind_timer option[value=1]').show();
@@ -496,6 +576,8 @@
    $('#remind_timer option[value=8]').show();
    $('#remind_timer option[value=9]').show();
    $('#show_date').show();
+   $('#show_date1').show();
+   $('#timeAlertForever').hide();
    $('#autodone_block').show();
 	   if(document.getElementById("all_day").checked){
 		document.getElementById("dps").style.display="block";
@@ -506,8 +588,11 @@
 	   }
 	   if(document.getElementById("is_repeating").checked){
 	    $('#repeat_type_block').show();
+		$('#repeatInfo').html('<i class="glyphicon glyphicon-repeat" style="color: green;"></i> Включено повторение задачи <i class="glyphicon glyphicon-share-alt" style="transform: rotate(60deg);margin-left: 5px;"></i>');
+		
 	   }else{
 	    $('#repeat_type_block').hide();
+		$('#repeatInfo').html('<i class="glyphicon glyphicon-repeat" style="color: #f66161;"></i> Не повторять задачу');
 	   }
  }
 });
@@ -530,8 +615,10 @@
   var thisCheck = $(this);
 	  if (thisCheck.is(':checked')) {
 	   $('#repeat_type_block').show();
+	   $('#repeatInfo').html('<i class="glyphicon glyphicon-repeat" style="color: green;"></i> Включено повторение задачи <i class="glyphicon glyphicon-share-alt" style="transform: rotate(60deg);margin-left: 5px;"></i>');
 	  } else {
 	   $('#repeat_type_block').hide();
+	   $('#repeatInfo').html('<i class="glyphicon glyphicon-repeat" style="color: #f66161;"></i> Не повторять задачу');
 	  }
  });
 
@@ -544,7 +631,7 @@
 	   $('#restore_weekly_block').hide();
 	  }
 
-      if (thisCheck.val()=='6') {//для минут
+      if (thisCheck.val()=='6') {
 	   document.getElementById("every_lbl").textContent="Повторять каждую ";
 	  } else {
 	   document.getElementById("every_lbl").textContent="Повторять каждый ";
@@ -556,33 +643,10 @@
   var thisCheck = $(this);
 	  if (thisCheck.is(':checked')) {
 	   $('#remind_details').show();
-       if (document.getElementById('is_nodate').checked){
-		   $('#remind_timer option[value=0]').hide();
-		   $('#remind_timer option[value=1]').hide();
-		   $('#remind_timer option[value=2]').hide();
-		   $('#remind_timer option[value=3]').hide();
-		   $('#remind_timer option[value=4]').hide();
-		   $('#remind_timer option[value=5]').hide();
-		   $('#remind_timer option[value=6]').hide();
-		   $('#remind_timer option[value=7]').hide();
-		   $('#remind_timer option[value=8]').hide();
-		   $('#remind_timer option[value=9]').hide();
-	       document.getElementById('remind_timer').value = 10;
-           $('#dps_remind_block').show();
-        }else{
-		   $('#remind_timer option[value=0]').show();
-		   $('#remind_timer option[value=1]').show();
-		   $('#remind_timer option[value=2]').show();
-		   $('#remind_timer option[value=3]').show();
-		   $('#remind_timer option[value=4]').show();
-		   $('#remind_timer option[value=5]').show();
-		   $('#remind_timer option[value=6]').show();
-		   $('#remind_timer option[value=7]').show();
-		   $('#remind_timer option[value=8]').show();
-		   $('#remind_timer option[value=9]').show();
-        }
+	   $('#remindMeInfo').html('<i class="glyphicon glyphicon-bell" style="color: green;"></i> Напоминание установлено ');
 	  } else {
 	   $('#remind_details').hide();
+	   $('#remindMeInfo').html('<i class="glyphicon glyphicon-bell" style="color: #f66161;"></i> Напоминания нет ');
 	  }
  });
  $('#remind_timer').change (function ()
@@ -615,8 +679,14 @@
 	   $('#remind_code_block').show();
 	  }
  });
+  $('#advanced').click (function ()
+  {
+  var thisCheck = $(this);
+	  if (thisCheck.is(':checked')) {
+	   $('#advanced_detais').show();
+	  } else {
+	   $('#advanced_detais').hide();
+	  }
+ });
 
-function toggle_show(id) {
-	document.getElementById(id).style.display = document.getElementById(id).style.display == 'none' ? 'block' : 'none';
-};
 </script>

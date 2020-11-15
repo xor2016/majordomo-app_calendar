@@ -16,7 +16,7 @@
    $qry.=" AND TITLE LIKE '%".DBSafe($title)."%'";
    $out['TITLE']=$title;
   }
-
+debmes('we are here!');
 global $calendar_category_id;
 if ($calendar_category_id!="") {
  $out['CALENDAR_CATEGORY_ID']=(int)$calendar_category_id;
@@ -48,7 +48,8 @@ if ($calendar_category_id!="") {
   if (!$sortby_calendar_events) $sortby_calendar_events="IS_NODATE DESC,DUE DESC";
   $out['SORTBY']=$sortby_calendar_events;
   // SEARCH RESULTS
-  $res=SQLSelect("SELECT calendar_events.*,calendar_categories.TITLE as CATEGORY FROM calendar_events left join calendar_categories ON calendar_events.calendar_category_id=calendar_categories.id WHERE $qry ORDER BY ".$sortby_calendar_events);
+  $res = SQLSelect("SELECT calendar_events.*,calendar_categories.TITLE as CATEGORY FROM calendar_events left join calendar_categories ON calendar_events.calendar_category_id=calendar_categories.id WHERE $qry ORDER BY ".$sortby_calendar_events);
+  $out['RESULT_MY']="test";
   if ($res[0]['ID']) {
    paging($res, 50, $out); // search result paging
    colorizeArray($res);
