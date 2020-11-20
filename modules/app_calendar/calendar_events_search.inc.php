@@ -16,7 +16,7 @@
    $qry.=" AND TITLE LIKE '%".DBSafe($title)."%'";
    $out['TITLE']=$title;
   }
-debmes('we are here!');
+//debmes('we are here!');
 global $calendar_category_id;
 if ($calendar_category_id!="") {
  $out['CALENDAR_CATEGORY_ID']=(int)$calendar_category_id;

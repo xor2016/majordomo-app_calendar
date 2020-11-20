@@ -37,6 +37,13 @@ function app_calendar() {
 * @access public
 */
 function saveParams($data=0) {
+	//debmes('we are here - saveParams');
+  //debmes('id-'. $id);
+  //debmes('mode -'. $mode);
+  //debmes('view_mode -'. $view_mode);
+  //debmes('edit_mode -'. $edit_mode);
+  //debmes('data_source -'. $data_source);
+  //debmes('tab -'. $tab);
  $p=array();
  if (IsSet($this->id)) {
   $p["id"]=$this->id;
@@ -63,12 +70,19 @@ function saveParams($data=0) {
 * @access public
 */
 function getParams() {
+	//debmes('we are here - getParams');
   global $id;
   global $mode;
   global $view_mode;
   global $edit_mode;
   global $data_source;
   global $tab;
+  //debmes('id-'. $id);
+  //debmes('mode -'. $mode);
+  //debmes('view_mode -'. $view_mode);
+  //debmes('edit_mode -'. $edit_mode);
+  //debmes('data_source -'. $data_source);
+  //debmes('tab -'. $tab);
   if (isset($id)) {
    $this->id=$id;
   }
@@ -98,7 +112,7 @@ function getParams() {
 function run() {
  global $session;
  
-   
+   //debmes('we are here - run');
   $out=array();
   if ($this->action=='admin') {
    $this->admin($out);
@@ -195,12 +209,13 @@ function run() {
 * @access public
 */
 function admin(&$out) {
+/*
 if ($this->view_mode<>"")debmes('class admin -view_mode '.$this->view_mode);
 if ($this->mode<>"")debmes('class admin -mode '.$this->mode);
 if ($this->datasource<>"")debmes('class admin -datasource '.$this->datasource);
 if ($_GET['data_source']<>"")debmes('class admin -get datasource '.$_GET['data_source']);
 if ($_POST['data_source']<>"")debmes('class admin -post datasource '.$_POST['data_source']);
-
+*/
  if (isset($this->data_source) && !$_GET['data_source'] && !$_POST['data_source']) {
   $out['SET_DATASOURCE']=1;
  }
@@ -253,11 +268,13 @@ if ($_POST['data_source']<>"")debmes('class admin -post datasource '.$_POST['dat
 * @access public
 */
 function usual(&$out) {
+/*
 if ($this->view_mode<>"")debmes('class usual -view_mode '.$this->view_mode);
 if ($this->mode<>"")debmes('class usual -mode '.$this->mode);
 if ($this->datasource<>"")debmes('class usual -datasource '.$this->datasource);
 if ($_GET['data_source']<>"")debmes('class usual -get datasource '.$_GET['data_source']);
 if ($_POST['data_source']<>"")debmes('class usual -post datasource '.$_POST['data_source']);
+*/
  if ($this->view_mode=='edit') {
   $this->usual_edit($out,$id);
  }
@@ -589,7 +606,7 @@ $days = array( 1=>"Пн","Вт","Ср","Чт","Пт","Сб","Вс");
     }else{
       $out['PROGRESS'] = 0;
     }
-	//список задач для выбора главной
+	//список задач для выбора главной (а события? todo)
     $out['FOR_LINKED_TASKS'] = SQLSelect("SELECT calendar_events.`ID`, calendar_events.`TITLE`,calendar_events.`DUE`,calendar_events.`PARENT_ID` ,calendar_categories.ICON FROM calendar_events left join calendar_categories on calendar_events.calendar_category_id=calendar_categories.id WHERE `IS_TASK`=1 and (`IS_DONE`=0 or `IS_REPEATING`=1) and calendar_events.`ID`<>".$out['ID']." order by `TITLE`");
 
     

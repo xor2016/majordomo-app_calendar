@@ -308,7 +308,7 @@
 <div id="repeat_type_block"[#if IS_REPEATING!="1"#] style="display:none"[#endif#]>
 	<div class="col-11 col-md-offset-1">
 		<span id="every_lbl">Повторять [#if REPEAT_TYPE="6"#]каждую[#else#] каждый[#endif#]</span>
-		<input type="text" size="1" style="padding: 5px;border: 0px;outline: none;box-shadow: 0 0 black;border-bottom: 1px solid darkgrey;text-align: center;" id="repeat_in" name="repeat_in" value="[#if REPEAT_IN="0"#]1[#else#][#REPEAT_IN#][#endif#]">
+		<input type="text" size="1" style="padding: 5px;border: 0px;outline: none;box-shadow: 0 0 black;border-bottom: 1px solid darkgrey;text-align: center;" id="repeat_in" name="repeat_in" value="[#if REPEAT_IN>"0"#][#REPEAT_IN#][#else#]1[#endif#]">
 		<i class="glyphicon glyphicon-arrow-right" style="color: darkgrey"></i>
 		<select name="repeat_type" id="repeat_type" data-role="none" style="padding: 5px;border: 0px;outline: none;box-shadow: 0 0 black;font-style: normal;">
 			<option value="1"[#if REPEAT_TYPE="1"#] selected[#endif#]>год
@@ -358,7 +358,9 @@
 							<option value="9"[#if REMIND_TIMER="9"#] selected[#endif#]>за 2 дня
 							<option value="10"[#if REMIND_TIMER="10"#] selected[#endif#]>в назначенное время
 						</select>
+						[#if REMIND_TIMER="10"#]
 						<i class="glyphicon glyphicon-share-alt" style="transform: rotate(60deg);margin-left: 5px;"></i>
+						[#endif#]
 					</div>
 					<input type="hidden" class="form-control" id="remind_time" name="remind_time" value="[#REMIND_TIME#]">
 			</div>
@@ -503,6 +505,7 @@
 		 <input type="hidden" name="view_mode" value="<#VIEW_MODE#>">
 		 <input type="hidden" name="mode" value="update">
 		 <input type="hidden" name="id" value="<#ID#>">
+  		<input type="hidden" name="tab" value="<#TAB#>">
 		</div>
 </div>
 </form>

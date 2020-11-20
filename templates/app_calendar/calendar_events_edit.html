@@ -301,7 +301,7 @@
 
 		<span id="show_date1"[#if IS_NODATE="1"#] style="display:none"[#endif#]>
 			<label style="margin-bottom: 0px;font-weight: normal;">
-				<input style="margin: 0;vertical-align: middle;" type="checkbox" name="is_repeating" id="is_repeating" value="1"[#if IS_REPEATING="1"#] checked[#endif#] data-role="none"> Повторять
+				<input style="margin: 0;vertical-align: middle;" type="checkbox" name="is_repeating" id="is_repeating" value="[#if REPEAT_IN>"0"#][#REPEAT_IN#][#else#]1[#endif#]""> Повторять
 			</label>
 		</span>
  
