@@ -638,7 +638,7 @@ $days = array( 1=>"Пн","Вт","Ср","Чт","Пт","Сб","Вс");
    }else{ //задача была выполнена
      $rec['DONE_WHEN'] = date('Y-m-d H:i:s');
      $rec['IS_DONE'] = 1;
-     if('SETTINGS_APP_CALENDAR_LOGGING') debmes('task "'.$rec['TITLE'].'" is done!','calendar');
+     if('SETTINGS_APP_CALENDAR_LOGGING') debmes('--> "'.$rec['TITLE'].'" is done!','calendar');
 	$rec['LOG'] = date('d.m.y H:i:s').' - завершено';
    }
   if ($rec['IS_REPEATING']) {
@@ -957,7 +957,7 @@ foreach( $calendar as $day ){
 		$tasks = SQLSelect($sql);
 		$total = count($tasks);
 		for ($i = 0; $i < $total; $i++) {
-			if('SETTINGS_APP_CALENDAR_LOGGING') debmes('autodone task finded "'.$tasks[$i]['TITLE'].'". process...',"calendar");
+			if('SETTINGS_APP_CALENDAR_LOGGING') debmes('autodoned task finded "'.$tasks[$i]['TITLE'].'". process...',"calendar");
 			$id = $tasks[$i]['ID'];
 			if($id){
 				$this -> task_done($id, 0);
@@ -1077,7 +1077,7 @@ calendar_categories - Categories
  calendar_events: REMIND_TIME datetime DEFAULT NULL
  calendar_events: REMIND_TYPE int(3) NOT NULL DEFAULT '0'
  calendar_events: REMIND_TIMER INT(3) NOT NULL DEFAULT '0'
- calendar_events: REMIND_INT INT(3) NOT NULL DEFAULT '0'
+ calendar_events: REMIND_IN INT(3) NOT NULL DEFAULT '0'
  calendar_events: REMIND_CODE text
  calendar_events: ALL_DAY int(3) NOT NULL DEFAULT '0'
  calendar_events: AUTODONE int(3) NOT NULL DEFAULT '0'
