@@ -13,7 +13,7 @@
   //searching 'TITLE' (varchar)
   global $title;
   if ($title!='') {
-   $qry.=" AND TITLE LIKE '%".DBSafe($title)."%'";
+   $qry.=" AND calendar_events.TITLE LIKE '%".DBSafe($title)."%'";
    $out['TITLE']=$title;
   }
 //debmes('we are here!');
